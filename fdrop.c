@@ -195,8 +195,13 @@ extern short         FDROP_PENDAT;
  * so these words are the only view into one.  fdrop_diag reads them.
  */
 extern short         FDROP_LASTN;
-extern short         FDROP_STEP;
 extern short         FDROP_SEQ;
+#if FDROP_DIAG
+extern short         FDROP_STEP;
+#define STEP(v)   (FDROP_STEP = (short)(v))
+#else   /* the step is a diagnostic: what branches on one is handed back */
+#define STEP(v)   ((void)0)
+#endif
 
 /*
  * ---- how far a drag got: FDROP_STEP ----
@@ -205,6 +210,11 @@ extern short         FDROP_SEQ;
  * recognised (FDROP_SEQ), plus FDROP_STEP: how far the last one got, or
  * why it was refused.  The values are fixed: a host shows them on the
  * screen and NOTES.md cites them by number.
+ *
+ * The step is kept in an FDROP_DIAG build only; STEP() is nothing in any
+ * other.  The one value the code itself acts on, kStepNoRoom, is not
+ * read back from the word: resolve_drag and resolve_rom hand their step
+ * back, and their caller sets FDROP_OVERFLOW from that.
  */
 enum {
     /* The route through the Finder's own drag routine (Finders 5.4 to
@@ -2163,7 +2173,7 @@ static const unsigned char *rec_by_handle(long want)
  * over every record, writing the takeable ones past the depth; then the
  * checks on what the walk saw.
  */
-static void resolve_drag(void)
+static short resolve_drag(void)
 {
     WindowPeek w;
     Point      start, at, org;
@@ -2179,8 +2189,7 @@ static void resolve_drag(void)
 
     desk = desktop_handle();
     if (desk == 0) {
-        FDROP_STEP = kStepHeapUnwalkable;
-        return;
+        return kStepHeapUnwalkable;
     }
     start.v = (short)((FDROP_START >> 16) & 0xFFFFL);
     start.h = (short)(FDROP_START & 0xFFFFL);
@@ -2197,8 +2206,7 @@ static void resolve_drag(void)
 
         if (w->windowKind < kUserKind || (long)w == FDROP_WIN || w->refCon == 0
             || w->titleHandle == 0 || *w->titleHandle == 0) {
-            FDROP_STEP = kStepNotInFinderWindow;
-            return;
+            return kStepNotInFinderWindow;
         }
         onDesk = false;
         cont = w->refCon;
@@ -2206,14 +2214,12 @@ static void resolve_drag(void)
         at.h = (short)(start.h + org.h);
         at.v = (short)(start.v + org.v);
         if (!PtInRect(at, &w->port.portRect)) {
-            FDROP_STEP = kStepNotInFinderWindow;
-            return;
+            return kStepNotInFinderWindow;
         }
         cn = rec_by_handle(cont);
         if (cn == 0 || !same_pstr(cn, (const unsigned char *)*w->titleHandle)
             || (dirID = container_dir(cn, &vol)) == 0) {
-            FDROP_STEP = kStepFolderUnnamed;
-            return;
+            return kStepFolderUnnamed;
         }
     }
     DG(kDgPressV, at.v);
@@ -2233,8 +2239,7 @@ static void resolve_drag(void)
         seen = (short)(seen + 1);
         if (c != cont) {
             if (sel && shown_in(c, desk)) {
-                FDROP_STEP = kStepSelectedElsewhere;
-                return;
+                return kStepSelectedElsewhere;
             }
             continue;
         }
@@ -2262,8 +2267,7 @@ static void resolve_drag(void)
              */
             k = mfs_folder(h, kRecName, base, &n, room);
             if (k != 0) {
-                FDROP_STEP = k;
-                return;
+                return k;
             }
             if (!startup_trash(nm, &v))
                 continue;
@@ -2281,8 +2285,7 @@ static void resolve_drag(void)
             d = kRootParID;
             if (!vol_name(v, vn) || !same_pstr(vn, nm)) {
                 DG(kDgRefTest, kTakeWrongVol);
-                FDROP_STEP = kStepNotTakeable;
-                return;
+                return kStepNotTakeable;
             }
             k = 0;
         } else {
@@ -2290,15 +2293,13 @@ static void resolve_drag(void)
                 v = rec_word(nm + kRecVol);
                 d = mfs_volume(v) ? kMfsDir : kRootDirID;
                 if (d == kRootDirID && !hfs_volume(v, vn)) {
-                    FDROP_STEP = kStepNotTakeable;
-                    return;
+                    return kStepNotTakeable;
                 }
             }
             if (d == kMfsDir) {
                 k = mfs_item(nm, h, v, onDesk, base, &n, room);
                 if (k != 0) {
-                    FDROP_STEP = k;
-                    return;
+                    return k;
                 }
                 continue;               /* queued by mfs_item */
             }
@@ -2309,8 +2310,7 @@ static void resolve_drag(void)
             DG(kDgRefParent, (short)(blob_long(nm + kRecParent) & 0xFFFFL));
             DG(kDgRefVol, rec_word(nm + kRecVol));
             DG(kDgRefTest, k);
-            FDROP_STEP = kStepNotTakeable;
-            return;
+            return kStepNotTakeable;
         }
         if (d == kAskDir)
             d = blob_long(nm + kRecParent);
@@ -2319,13 +2319,11 @@ static void resolve_drag(void)
 
             if (rec_word(e + 4) == v && blob_long(e + 6) == d
                 && same_pstr(e + 10, nm)) {
-                FDROP_STEP = kStepOneItemTwice;
-                return;
+                return kStepOneItemTwice;
             }
         }
         if (n >= room) {
-            FDROP_STEP = kStepNoRoom;
-            return;
+            return kStepNoRoom;
         }
         put_drop((short)(base + n), v, d, nm);
         n = (short)(n + 1);
@@ -2333,25 +2331,21 @@ static void resolve_drag(void)
     DG(kDgRecords, seen);
     DG(kDgHits, hits);
     if (walk == 0) {
-        FDROP_STEP = kStepHeapUnwalkable;
-        return;
+        return kStepHeapUnwalkable;
     }
     if (hits != 1) {
-        FDROP_STEP = kStepNotOneIcon;
-        return;
+        return kStepNotOneIcon;
     }
     if (!pressedSel) {
-        FDROP_STEP = kStepIconNotSelected;
-        return;
+        return kStepIconNotSelected;
     }
     if (n == 0) {
-        FDROP_STEP = kStepNothingToHand;
-        return;
+        return kStepNothingToHand;
     }
     FDROP_PEND = n;
     FDROP_PENDAT = base;
     FDROP_STATE = kDragCarries;
-    FDROP_STEP = kStepFilesFound;
+    return kStepFilesFound;
 }
 
 #endif  /* FDROP_OWN_ROUTE */
@@ -2406,7 +2400,7 @@ static void drag_arm(const unsigned char *f, long a6, long fw, long mb)
     FDROP_OVER    = 0;
     FDROP_FIN     = kFinNotYet;
     FDROP_SEQ     = (short)(FDROP_SEQ + 1);
-    FDROP_STEP    = kStepRecognised;
+    STEP(kStepRecognised);
     FDROP_DRAGFP  = a6;                 /* last: it is what arms _GetMouse */
 }
 #endif  /* FDROP_OWN_ROUTE */
@@ -2838,7 +2832,7 @@ static long rom_proc(const unsigned char *f)
  * is and is refused whole, so the Finder is told the drop was where it
  * began and puts the icons back; kDragCarries when all of it holds.
  */
-static void resolve_rom(void)
+static short resolve_rom(void)
 {
     WindowPeek           w = window_at(FDROP_START);
     const unsigned char *at = rec_first();
@@ -2855,13 +2849,11 @@ static void resolve_rom(void)
     if (w == 0) {
         cont = rom_desk(&lay);
         if (cont == 0L) {
-            FDROP_STEP = kStepRomDeskNoIcon;
-            return;
+            return kStepRomDeskNoIcon;
         }
     } else if (w->windowKind != kFinderWKind || (long)w == FDROP_WIN
                || w->refCon == 0) {
-        FDROP_STEP = kStepRomNotFinderWindow;
-        return;
+        return kStepRomNotFinderWindow;
     } else
         cont = w->refCon;
     while ((d = blk_next(&at, &h, &logical)) != 0) {
@@ -2881,12 +2873,10 @@ static void resolve_rom(void)
 
             FDROP_STATE = kDragRefused;
             if (!rom_disk(d, logical, k, vn)) {
-                FDROP_STEP = kStepRomUnknownDisk;
-                return;
+                return kStepRomUnknownDisk;
             }
             if (n >= room) {
-                FDROP_STEP = kStepNoRoom;
-                return;
+                return kStepNoRoom;
             }
             put_drop((short)(base + n), rec_word(d + kItemVol), kRootParID, vn);
             n = (short)(n + 1);
@@ -2906,8 +2896,7 @@ static void resolve_rom(void)
             FDROP_STATE = kDragRefused;
             step = mfs_folder(h, 0, base, &n, room);
             if (step != 0) {
-                FDROP_STEP = step;
-                return;
+                return step;
             }
             continue;
         }
@@ -2915,8 +2904,7 @@ static void resolve_rom(void)
             if (w != 0 || (d[ROM_SEL(lay)] & kSelBit) == 0)
                 continue;               /* not an item's record */
             FDROP_STATE = kDragRefused;
-            FDROP_STEP = kStepRomUnknownIcon;
-            return;
+            return kStepRomUnknownIcon;
         }
         if ((d[ROM_SEL(k)] & kSelBit) == 0)
             continue;
@@ -2925,24 +2913,21 @@ static void resolve_rom(void)
             short step = mfs_take(d, k, base, &n, room);
 
             if (step != 0) {
-                FDROP_STEP = step;
-                return;
+                return step;
             }
         }
     }
     if (at == 0) {
         FDROP_STATE = kDragNotIcons;
-        FDROP_STEP = kStepHeapUnwalkable;
-        return;
+        return kStepHeapUnwalkable;
     }
     if (n == 0) {
-        FDROP_STEP = kStepRomNothingSelected;
-        return;
+        return kStepRomNothingSelected;
     }
     FDROP_PEND = n;
     FDROP_PENDAT = base;
     FDROP_STATE = kDragCarries;
-    FDROP_STEP = kStepRomItemsFound;
+    return kStepRomItemsFound;
 }
 
 /*
@@ -2985,7 +2970,7 @@ static void rom_arm(long a6, long mb)
     FDROP_OVER    = 0;
     FDROP_FIN     = kFinNotYet;
     FDROP_SEQ     = (short)(FDROP_SEQ + 1);
-    FDROP_STEP    = kStepRomArmed;
+    STEP(kStepRomArmed);
     FDROP_DRAGFP  = a6;
     FDROP_ROMMODE = 1;
 }
@@ -3051,8 +3036,10 @@ static long rom_answer(Point *pt, long ret, long a6)
         if (!over_panel())
             return 0;
         if (FDROP_STATE == kDragUnread) {
-            resolve_rom();
-            FDROP_OVERFLOW = (short)(FDROP_STEP == kStepNoRoom);
+            short k = resolve_rom();
+
+            STEP(k);
+            FDROP_OVERFLOW = (short)(k == kStepNoRoom);
         }
         if (FDROP_STATE == kDragNotIcons)
             return 0;                   /* not the Finder's icons */
@@ -3157,8 +3144,10 @@ long fdrop_answer(Point *pt, long ret, long a6)
         if (!over_panel())
             return 0;
         if (FDROP_STATE == kDragUnread) {
-            resolve_drag();
-            FDROP_OVERFLOW = (short)(FDROP_STEP == kStepNoRoom);
+            short k = resolve_drag();
+
+            STEP(k);
+            FDROP_OVERFLOW = (short)(k == kStepNoRoom);
         }
         DGINC(kDgGetMouse);
         FDROP_FAKED = 1;
@@ -3620,7 +3609,11 @@ void fdrop_diag(short *out)
     out[2] = kSelOff;
 #if FDROP_SENDER
     out[3] = FDROP_LASTN;
+#if FDROP_DIAG
     out[4] = (short)(FDROP_SEQ * 100 + FDROP_STEP);
+#else
+    out[4] = (short)(FDROP_SEQ * 100);
+#endif
 #else   /* the sender's words: zero in a build without it */
     out[3] = 0;
     out[4] = 0;
@@ -3692,7 +3685,7 @@ void fdrop_idle(void)
             }
             set_drops_queued((short)(at + FDROP_PEND));
             FDROP_LASTN = FDROP_PEND;
-            FDROP_STEP = kStepDropTaken;
+            STEP(kStepDropTaken);
         }
         FDROP_PEND = 0;
     }

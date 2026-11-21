@@ -329,8 +329,10 @@ call; `examples/check_switches.sh` checks that by name.
 Two things every sender build holds anyway, so they are not taken for
 faults: a build for the later ROMs patches `_FindWindow` even without
 `FDROP_OWN_ROUTE`, because another copy may take over its trampoline;
-and three of `fdrop_diag`'s words are kept, so a result can be read out
-of a shipping build.
+and two of the sender's words behind `fdrop_diag` are kept (the files
+the last drop carried, and the drags recognised), so a result can be
+read out of a shipping build. How far a drag got, `FDROP_STEP`, is
+`FDROP_DIAG`'s.
 
 ### What each build weighs
 
@@ -338,13 +340,13 @@ The example accessory as a `DRVR`, about 1.5 KB of which is the example:
 
 | built for | flags | bytes |
 |---|---|---|
-| everything | none | 11446 |
-| the 64K ROM, Systems 1.1 and 2.0: the smallest sender | `FDROP_FINDER5` `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5744 |
-| the 64K ROM, Systems 1.1 to 3.2 | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5944 |
-| the 64K ROM, Systems 3.3 and 4.1 | `FDROP_ROM_ROUTE` `FDROP_FINDER5` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 7372 |
-| Systems 1.1 to 3.2 on any ROM | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` off | 7352 |
-| Systems 4.0 to 6.0.8 alone | `FDROP_ROM_ROUTE` `FDROP_RECEIVER` `FDROP_ROM64K` off | 7720 |
-| System 4.0 and later (a control panel) | `FDROP_ROM_ROUTE` `FDROP_ROM64K` off | 8562 |
+| everything | none | 11358 |
+| the 64K ROM, Systems 1.1 and 2.0: the smallest sender | `FDROP_FINDER5` `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5694 |
+| the 64K ROM, Systems 1.1 to 3.2 | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5884 |
+| the 64K ROM, Systems 3.3 and 4.1 | `FDROP_ROM_ROUTE` `FDROP_FINDER5` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 7338 |
+| Systems 1.1 to 3.2 on any ROM | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` off | 7292 |
+| Systems 4.0 to 6.0.8 alone | `FDROP_ROM_ROUTE` `FDROP_RECEIVER` `FDROP_ROM64K` off | 7680 |
+| System 4.0 and later (a control panel) | `FDROP_ROM_ROUTE` `FDROP_ROM64K` off | 8524 |
 | the Drag Manager alone, patching nothing | `FDROP_ROM_ROUTE` `FDROP_OWN_ROUTE` off | 3064 |
 
 Every row has taken its drops on an emulated Macintosh

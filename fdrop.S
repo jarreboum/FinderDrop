@@ -66,7 +66,9 @@
 	.globl	FDROP_OVERFLOW
 	.globl	FDROP_WIN
 	.globl	FDROP_LASTN
+#if FDROP_DIAG
 	.globl	FDROP_STEP
+#endif
 	.globl	FDROP_SEQ
 
 | The two patches are assembled only when one of the sender's two routes
@@ -360,7 +362,7 @@ FDROP_LASTN:
 	.word	0                     | files the last gesture carried
 #endif
 	.align	2
-#if FDROP_SENDER
+#if FDROP_SENDER && FDROP_DIAG
 FDROP_STEP:
 	.word	0                     | how far the last drag got: fdrop.c, kStep...
 #endif

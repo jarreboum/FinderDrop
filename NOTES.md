@@ -4698,3 +4698,32 @@ The review found nothing else above low severity.
 ### An MFS file in two records is refused, and the startup Trash is found off the VCB
 
 `mfs_take` now asks the same question the HFS path does (the same volume, directory 0 and name already queued: `kStepOneItemTwice`), on both routes, since the own route's `mfs_item` and the ROM route's sender both go through it. `startup_trash` reads the startup volume's signature off its VCB instead of calling `PBHGetVInfo`, which the 64K ROM lacks: no Trash on an MFS-only startup disk, by design rather than by an unset field, and the Trash when the Hard Disk 20 HFS patch is loaded.
+
+## The step word is the diagnostic build's
+
+2026-11-22, emulated: `FDROP_STEP` is written in an `FDROP_DIAG` build
+only (`STEP()` in `fdrop.c`). The one step the code acts on,
+`kStepNoRoom`, is no longer read back from the word: `resolve_drag` and
+`resolve_rom` return their step and the caller sets `FDROP_OVERFLOW`
+from it, so the refusal for want of room is the same in every build.
+`fdrop_diag`'s word 4 is a hundred times the drags recognised, with the
+step added in a diagnostic build. The example accessory, plain: 88 bytes
+off the full build (11446 to 11358), 50 off the smallest, 34 to 60 off
+the rest, the Drag Manager build unchanged; diagnostic builds 16 to 46
+smaller, every step word as before.
+
+Run against the commit before it, plain and diagnostic builds of each:
+6.0.8 with an MFS floppy (single Finder and MultiFinder), 4.1 on the
+512Ke, 4.1 on the 512K with MFS alone (its own Finder and 4.0's) and with
+`Hard Disk 20`, the HFS gestures on 6.0.8 both ways and on 4.1 with
+`Hard Disk 20`, the control panel on 4.1, 1.1 on a 128K (smallest) and
+3.0 on a 512Ke, 7.5.3's Drag Manager and the quick drags at a Plus's
+speed: the same state words in every RAM snapshot, step words included
+in the diagnostic builds (a plain build reads no step now), and the same
+items taken. The differences were timing: a text caret, a drag outline
+mid-drag, one `ACT` in a snapshot taken mid-drag, and how many of the
+quick drags were counted, which differed as much between two runs of the
+older commit. The switch matrix, every build on every System, gave the
+same row for all 55 it had before (and `every` on 1.1 with a Plus ROM,
+not run before, takes its drop).
+

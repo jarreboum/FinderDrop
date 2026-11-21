@@ -43,14 +43,14 @@ ROM64K="trap_addr64 rom64_slot rom64_present rom64_encode FDROP_ROM64_FWW
 ROMPLUS="tramp_at tramp_passes tramp_reusable tramp_flush tramp_mark
  multifinder listed FDROP_ROMWRAP FDROP_TOOLTAB"
 # With BOTH routes off there is no sender, and these go as well: the
-# MFS files and folders are both routes'.
+# MFS files and folders are both routes'.  (FDROP_STEP is FDROP_DIAG's.)
 SENDER="patch_install patch_remove fdrop_look fdrop_answer over_panel
  window_at answer_start port_origin blk_next name_ends item_name mfs_file
  mfs_take mfs_folder rec_of vol_name vol_online
  vcb_of vcb_vol tramp_write FDROP_GM FDROP_FW FDROP_FW_OLD FDROP_GM_OLD FDROP_TRAMP
  FDROP_BUSY FDROP_DRAGFP FDROP_DRAGRET FDROP_START FDROP_GEST FDROP_ACT
  FDROP_OVER FDROP_FIN FDROP_STATE FDROP_PEND FDROP_PENDAT FDROP_LASTN
- FDROP_STEP FDROP_SEQ FDROP_OVERFLOW FDROP_ENABLE"
+ FDROP_SEQ FDROP_OVERFLOW FDROP_ENABLE"
 # The early route on the 64K ROM alone patches _GetMouse and nothing else.
 ONEPATCH="FDROP_FW FDROP_FW_OLD FDROP_ROM64_FWW"
 

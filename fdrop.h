@@ -486,8 +486,9 @@ void    fdrop_idle(void);
  *   1  zero
  *   2  the selected flag's offset (fdrop.c, kSelOff)
  *   3  how many files the last drop carried
- *   4  a hundred times the Finder drags recognised, plus how far the last
- *      one got (fdrop.c names each step, kStep...)
+ *   4  a hundred times the Finder drags recognised, plus, in an
+ *      FDROP_DIAG build, how far the last one got (fdrop.c names each
+ *      step, kStep...)
  *   5-10  zero
  *
  * The zero words are left as gaps rather than reused, so that older
