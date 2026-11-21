@@ -1155,11 +1155,26 @@ static Boolean name_ends(const unsigned char *d, long logical, short off)
 }
 
 /*
- * FDROP_OWN_ROUTE (fdrop.h): rec_next and same_pstr here, and below
+ * FDROP_OWN_ROUTE (fdrop.h): rec_next here, and below
  * hfs_volume, the catalog's readers, and everything from
  * finder_drag_call to the end of resolve_drag, are the route for the
  * Finders that carry a drag routine of their own, 5.4 to 6.1.8.
  */
+/* Whether two Pascal strings are the same, byte for byte.  Neither may be
+   0: every caller has a string in hand. */
+static Boolean same_pstr(const unsigned char *a, const unsigned char *b)
+{
+    short i;
+
+    if (a[0] != b[0])
+        return false;
+    for (i = 1; i <= (short)a[0]; i++) {
+        if (a[i] != b[i])
+            return false;
+    }
+    return true;
+}
+
 #if FDROP_OWN_ROUTE
 /* The next item record at or after `*at` (blk_next), as its name, with
    its handle; 0 at the end. */
@@ -1175,20 +1190,6 @@ static const unsigned char *rec_next(const unsigned char **at, long *handle)
         }
     }
     return 0;
-}
-
-/* Whether two Pascal strings are the same, byte for byte. */
-static Boolean same_pstr(const unsigned char *a, const unsigned char *b)
-{
-    short i;
-
-    if (a == 0 || b == 0 || a[0] != b[0])
-        return false;
-    for (i = 1; i <= (short)a[0]; i++) {
-        if (a[i] != b[i])
-            return false;
-    }
-    return true;
 }
 
 #endif  /* FDROP_OWN_ROUTE */
@@ -1267,6 +1268,16 @@ static unsigned short vcb_vol(short vRefNum, unsigned char *name)
     return *(const unsigned short *)(v + kVcbSigWord);
 }
 
+/*
+ * A window of an MFS volume, its disk's or one of its folders': there is
+ * no directory, and each item is believed by its file number (mfs_item).
+ * As a directory to fm_entry, it asks for a file of an MFS volume.
+ */
+#define kMfsDir (-2L)
+
+static OSErr fm_entry(const unsigned char *name, short vRefNum, long dirID,
+                      Boolean *isDir, long *num, unsigned short *flags);
+
 #if FDROP_OWN_ROUTE
 /*
  * Whether the volume a vRefNum names is mounted and HFS, with its name
@@ -1308,8 +1319,6 @@ static Boolean vol_name(short vRefNum, unsigned char *name)
  * something else is still found.  False when there is no such folder,
  * and the Trash is then left out.
  */
-static OSErr cat_entry(const unsigned char *name, short vRefNum, long dirID,
-                       Boolean *isDir, long *ownID, unsigned short *flags);
 
 static Boolean startup_trash(const unsigned char *name, short *vol)
 {
@@ -1323,44 +1332,8 @@ static Boolean startup_trash(const unsigned char *name, short *vol)
     *vol = *(short *)0x0210L;           /* BootDrive */
     if (!hfs_volume(*vol, vn) || !vol_online(*vol))
         return false;
-    return (Boolean)(cat_entry(name, *vol, kRootDirID, &isDir, &own, &fl)
+    return (Boolean)(fm_entry(name, *vol, kRootDirID, &isDir, &own, &fl)
                      == noErr && isDir);
-}
-
-/*
- * A catalog entry by name in a directory: whether there is one, whether
- * it is a folder, and for a folder its own directory ID.  `flags` gets
- * the Finder flags, a file's or a folder's.
- */
-static OSErr cat_entry(const unsigned char *name, short vRefNum, long dirID,
-                       Boolean *isDir, long *ownID, unsigned short *flags)
-{
-    CInfoPBRec ci;
-    unsigned char nm[64];               /* a Str63: MFS names reach 63 */
-    short i;
-    OSErr err;
-
-    /* The deepest frame on the drag path (a parameter block and a name,
-       under resolve_drag): where the low-water mark is taken. */
-    stk_low();
-    if (name[0] > 63)
-        return bdNamErr;                /* never copied past the buffer */
-    for (i = 0; i <= (short)name[0]; i++)
-        nm[i] = name[i];
-    for (i = 0; i < (short)sizeof(ci); i++)
-        ((char *)&ci)[i] = 0;
-    ci.hFileInfo.ioNamePtr   = (StringPtr)nm;
-    ci.hFileInfo.ioVRefNum   = vRefNum;
-    ci.hFileInfo.ioDirID     = dirID;
-    ci.hFileInfo.ioFDirIndex = 0;
-    err = PBGetCatInfoSync(&ci);
-    if (err != noErr)
-        return err;
-    *isDir = (Boolean)((ci.hFileInfo.ioFlAttrib & 0x10) != 0);  /* a folder */
-    *ownID = *isDir ? ci.dirInfo.ioDrDirID : 0L;
-    *flags = *isDir ? (unsigned short)ci.dirInfo.ioDrUsrWds.frFlags
-                    : (unsigned short)ci.hFileInfo.ioFlFndrInfo.fdFlags;
-    return noErr;
 }
 
 /*
@@ -1369,12 +1342,6 @@ static OSErr cat_entry(const unsigned char *name, short vRefNum, long dirID,
  * directory its own record names.
  */
 #define kAskDir (-1L)
-
-/*
- * A window of an MFS volume, its disk's or one of its folders': there is
- * no directory, and each item is believed by its file number (mfs_item).
- */
-#define kMfsDir (-2L)
 
 /*
  * The directory a container record's window shows, and the volume; 0 if
@@ -1418,7 +1385,7 @@ static long container_dir(const unsigned char *cn, short *vol)
     *vol = v;
     if (!vol_online(v))
         return kAskDir;                 /* each item's record says */
-    if (cat_entry(cn, v, par, &isDir, &own, &fl) != noErr || !isDir)
+    if (fm_entry(cn, v, par, &isDir, &own, &fl) != noErr || !isDir)
         return 0;
     return own;
 }
@@ -1461,7 +1428,7 @@ static short takeable(const unsigned char *rec, short vol, long dirID,
         return kTakeDeskWrong;          /* on the desktop, or not, wrongly */
     if (!vol_online(vol))
         return 0;                       /* not asked: see vol_online */
-    err = cat_entry(rec, vol, dirID, &isDir, &own, &fl);
+    err = fm_entry(rec, vol, dirID, &isDir, &own, &fl);
     DG(kDgCatFlags, err == noErr ? (short)fl : err);
     if (err != noErr)
         return kTakeMissing;            /* not there */
@@ -1651,37 +1618,84 @@ static short item_name(const unsigned char *d, long logical, short lay)
 }
 
 /*
- * Whether the File Manager finds a visible file of that name on that
- * volume with that FILE NUMBER.  An MFS volume has no directories, so
- * the number in the Finder's record is the check a wrong record fails.
- * _GetFileInfo, which the 64K ROM has.  The name is copied out of the
+ * The File Manager's word on an item by name: whether there is one,
+ * whether it is a folder, its number (a folder's own directory ID, a
+ * file's file number: one word in both parameter blocks) and its Finder
+ * flags (a file's or a folder's, in one place in both).  The one real
+ * difference between the two file systems is how it is asked.
+ *
+ * In a directory of an HFS volume, by PBGetCatInfo.  On an MFS volume
+ * (`dirID` kMfsDir), which has no directories, by _GetFileInfo, which
+ * the 64K ROM has; there the number in the Finder's record is the check
+ * a wrong record fails (mfs_take), and the volume must be one
+ * (vol_name) and the name not empty.  The name is copied out of the
  * Finder's heap first, because it is in a relocatable block.
  */
-static Boolean mfs_file(short vol, const unsigned char *name, long num)
-{
-    ParamBlockRec pb;
-    unsigned char nm[64];
-    short         i;
+#if FDROP_OWN_ROUTE
+#define ASKS_MFS(dirID) ((dirID) == kMfsDir)
+#else   /* the ROM route's Finders: an MFS file is all there is to ask */
+#define ASKS_MFS(dirID) ((void)(dirID), 1)
+#endif
 
-    /* The deepest frame on the drag path, as cat_entry is: the low-water
-       mark is taken here too. */
+static OSErr fm_entry(const unsigned char *name, short vRefNum, long dirID,
+                      Boolean *isDir, long *num, unsigned short *flags)
+{
+    CInfoPBRec    ci;
+    unsigned char nm[64];               /* a Str63: MFS names reach 63 */
+    short         i;
+    OSErr         err;
+
+    /* The deepest frame on the drag path (a parameter block and a name,
+       under resolve_drag): where the low-water mark is taken. */
     stk_low();
-    if (name[0] < 1 || name[0] > 63)
-        return false;
-    if (!vol_name(vol, nm))             /* a volume: see vol_name */
-        return false;
+    if (name[0] > 63)
+        return bdNamErr;                /* never copied past the buffer */
+    if (ASKS_MFS(dirID) && (name[0] < 1 || !vol_name(vRefNum, nm)))
+        return nsvErr;                  /* a volume: see vol_name */
     for (i = 0; i <= (short)name[0]; i++)
         nm[i] = name[i];
-    for (i = 0; i < (short)sizeof pb; i++)
-        ((unsigned char *)&pb)[i] = 0;
-    pb.fileParam.ioNamePtr = nm;
-    pb.fileParam.ioVRefNum = vol;
-    if (PBGetFInfoSync(&pb) != noErr)
-        return false;
-    if (pb.fileParam.ioFlNum != num)
-        return false;
-    /* not fInvisible */
-    return (Boolean)((pb.fileParam.ioFlFndrInfo.fdFlags & 0x4000) == 0);
+    for (i = 0; i < (short)sizeof(ci); i++)
+        ((char *)&ci)[i] = 0;
+    ci.hFileInfo.ioNamePtr   = (StringPtr)nm;
+    ci.hFileInfo.ioVRefNum   = vRefNum;
+#if FDROP_OWN_ROUTE
+    if (dirID != kMfsDir) {
+        ci.hFileInfo.ioDirID = dirID;
+        err = PBGetCatInfoSync(&ci);
+    } else
+#endif
+        err = PBGetFInfoSync((ParmBlkPtr)&ci);
+    if (err != noErr)
+        return err;
+    *isDir = (Boolean)((ci.hFileInfo.ioFlAttrib & 0x10) != 0);  /* a folder */
+    *num   = ci.hFileInfo.ioDirID;      /* dirInfo.ioDrDirID, fileParam.ioFlNum */
+    *flags = (unsigned short)ci.hFileInfo.ioFlFndrInfo.fdFlags;  /* frFlags */
+    return noErr;
+}
+
+/*
+ * Queue one item at `base + *n`, unless the same item (volume, directory
+ * and name) is queued already or there is no room.  Answers 0, or the
+ * step that refuses the drop.  Both file systems' items come through
+ * here; an MFS file's directory is 0.
+ */
+static short queue_item(short v, long dir, const unsigned char *name,
+                        short base, short *n, short room)
+{
+    short i;
+
+    for (i = 0; i < *n; i++) {          /* the same item already queued? */
+        const unsigned char *e = queue_at((short)(base + i));
+
+        if (rec_word(e + 4) == v && blob_long(e + 6) == dir
+            && same_pstr(e + 10, name))
+            return kStepOneItemTwice;
+    }
+    if (*n >= room)
+        return kStepNoRoom;             /* more than the list can take */
+    put_drop((short)(base + *n), v, dir, name);
+    *n = (short)(*n + 1);
+    return 0;
 }
 
 /*
@@ -1701,30 +1715,18 @@ static short mfs_take(const unsigned char *d, short k, short base, short *n,
     if (off) {
         if (vcb_of(v) == 0)
             return kStepMfsFileUnknown;  /* no such volume */
-    } else if (!mfs_file(v, d + k, num))
-        return kStepMfsFileUnknown;     /* not a file the volume agrees on */
+    } else {
+        Boolean        isDir;
+        long           got;
+        unsigned short fl;
+
+        if (fm_entry(d + k, v, kMfsDir, &isDir, &got, &fl) != noErr
+            || got != num || (fl & 0x4000) != 0)  /* not fInvisible */
+            return kStepMfsFileUnknown;  /* not a file the volume agrees on */
+    }
     if (d[k] > kNameMax)
         return kStepNameTooLong;        /* a name a drop cannot carry */
-    {
-        short i, j;
-
-        for (i = 0; i < *n; i++) {      /* the same file already queued? */
-            const unsigned char *e = queue_at((short)(base + i));
-
-            if (rec_word(e + 4) != v || blob_long(e + 6) != 0L
-                || e[10] != d[k])
-                continue;
-            for (j = 1; j <= d[k] && e[10 + j] == d[k + j]; j++)
-                ;
-            if (j > d[k])
-                return kStepOneItemTwice;
-        }
-    }
-    if (*n >= room)
-        return kStepNoRoom;             /* more than the list can take */
-    put_drop((short)(base + *n), v, 0L, d + k);
-    *n = (short)(*n + 1);
-    return 0;
+    return queue_item(v, 0L, d + k, base, n, room);
 }
 
 /*
@@ -2314,19 +2316,9 @@ static short resolve_drag(void)
         }
         if (d == kAskDir)
             d = blob_long(nm + kRecParent);
-        for (k = 0; k < n; k++) {       /* the same item already queued? */
-            const unsigned char *e = queue_at((short)(base + k));
-
-            if (rec_word(e + 4) == v && blob_long(e + 6) == d
-                && same_pstr(e + 10, nm)) {
-                return kStepOneItemTwice;
-            }
-        }
-        if (n >= room) {
-            return kStepNoRoom;
-        }
-        put_drop((short)(base + n), v, d, nm);
-        n = (short)(n + 1);
+        k = queue_item(v, d, nm, base, &n, room);
+        if (k != 0)
+            return k;
     }
     DG(kDgRecords, seen);
     DG(kDgHits, hits);

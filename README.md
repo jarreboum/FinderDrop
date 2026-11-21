@@ -340,13 +340,13 @@ The example accessory as a `DRVR`, about 1.5 KB of which is the example:
 
 | built for | flags | bytes |
 |---|---|---|
-| everything | none | 11358 |
-| the 64K ROM, Systems 1.1 and 2.0: the smallest sender | `FDROP_FINDER5` `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5694 |
-| the 64K ROM, Systems 1.1 to 3.2 | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5884 |
-| the 64K ROM, Systems 3.3 and 4.1 | `FDROP_ROM_ROUTE` `FDROP_FINDER5` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 7338 |
-| Systems 1.1 to 3.2 on any ROM | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` off | 7292 |
-| Systems 4.0 to 6.0.8 alone | `FDROP_ROM_ROUTE` `FDROP_RECEIVER` `FDROP_ROM64K` off | 7680 |
-| System 4.0 and later (a control panel) | `FDROP_ROM_ROUTE` `FDROP_ROM64K` off | 8524 |
+| everything | none | 11224 |
+| the 64K ROM, Systems 1.1 and 2.0: the smallest sender | `FDROP_FINDER5` `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5700 |
+| the 64K ROM, Systems 1.1 to 3.2 | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 5892 |
+| the 64K ROM, Systems 3.3 and 4.1 | `FDROP_ROM_ROUTE` `FDROP_FINDER5` `FDROP_RECEIVER` `FDROP_ROMPLUS` off | 7146 |
+| Systems 1.1 to 3.2 on any ROM | `FDROP_OWN_ROUTE` `FDROP_RECEIVER` off | 7300 |
+| Systems 4.0 to 6.0.8 alone | `FDROP_ROM_ROUTE` `FDROP_RECEIVER` `FDROP_ROM64K` off | 7528 |
+| System 4.0 and later (a control panel) | `FDROP_ROM_ROUTE` `FDROP_ROM64K` off | 8394 |
 | the Drag Manager alone, patching nothing | `FDROP_ROM_ROUTE` `FDROP_OWN_ROUTE` off | 3064 |
 
 Every row has taken its drops on an emulated Macintosh

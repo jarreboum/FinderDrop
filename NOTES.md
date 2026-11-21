@@ -4727,3 +4727,28 @@ older commit. The switch matrix, every build on every System, gave the
 same row for all 55 it had before (and `every` on 1.1 with a Plus ROM,
 not run before, takes its drop).
 
+## One File Manager question and one queue for an MFS file and an HFS item
+
+2026-11-22, emulated: `fm_entry` replaces `mfs_file` and `cat_entry`,
+and branches on the one real difference, how the item is asked for: an
+MFS file by `_GetFileInfo` (the 64K ROM has it) and believed by its
+file number, an HFS item by `PBGetCatInfo` in its directory. The two
+parameter blocks hold the number (`ioFlNum`, `ioDrDirID`) and the
+Finder flags (`fdFlags`, `frFlags`) at the same offsets, so the answer
+is read once. `queue_item` is the duplicate test, the room test and
+`put_drop` that `mfs_take` and `resolve_drag` each wrote out.
+
+The example accessory, plain: 134 bytes off the full build (11358 to
+11224), 130 to 192 off the builds with the own route; the builds with
+the ROM route alone grow by 6 or 8 (`mfs_take` is all of it there, and
+the shared question writes two answers it does not read). The MFS path's
+deepest frame is a `CInfoPBRec` where it was a `ParamBlockRec`, 28
+bytes more of the Finder's stack, not measured under `FDROP_STK`.
+
+Run as for the step change above, plain and diagnostic, against that
+commit: every state and step word the same in every RAM snapshot of the
+diagnostic builds (174), the same items taken in the plain ones, and
+the switch matrix the same in all 56 rows. The quick drags at a Plus's speed
+were counted 3 times of 12 in one plain run, and 9 and 6 in two more,
+against 6 to 10 before: timing, as above.
+

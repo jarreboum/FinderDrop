@@ -29,9 +29,9 @@ mkdir -p "$OUT"
 ROM_ROUTE="rom_answer rom_arm resolve_rom rom_desk rom_root rom_record
  rom_disk rom_proc rom_body rom_drag_routine FDROP_ROMDRAG FDROP_ROMWRAP
  FDROP_ROMMODE"
-OWN_ROUTE="resolve_drag finder_drag_call takeable container_dir cat_entry
+OWN_ROUTE="resolve_drag finder_drag_call takeable container_dir
  hfs_volume mfs_volume mfs_item disk_record same_gesture drag_arm startup_trash desktop_handle
- shown_in rec_by_handle rec_next same_pstr FDROP_FWRET FDROP_OUTSITE
+ shown_in rec_by_handle rec_next FDROP_FWRET FDROP_OUTSITE
  FDROP_LASTGM FDROP_FAKED"
 RECEIVER="FDROP_RECEIVE FDROP_TRACKING drag_files call_room record_drop
  FDROP_ROOM"
@@ -45,8 +45,8 @@ ROMPLUS="tramp_at tramp_passes tramp_reusable tramp_flush tramp_mark
 # With BOTH routes off there is no sender, and these go as well: the
 # MFS files and folders are both routes'.  (FDROP_STEP is FDROP_DIAG's.)
 SENDER="patch_install patch_remove fdrop_look fdrop_answer over_panel
- window_at answer_start port_origin blk_next name_ends item_name mfs_file
- mfs_take mfs_folder rec_of vol_name vol_online
+ window_at answer_start port_origin blk_next name_ends item_name fm_entry
+ mfs_take mfs_folder queue_item same_pstr rec_of vol_name vol_online
  vcb_of vcb_vol tramp_write FDROP_GM FDROP_FW FDROP_FW_OLD FDROP_GM_OLD FDROP_TRAMP
  FDROP_BUSY FDROP_DRAGFP FDROP_DRAGRET FDROP_START FDROP_GEST FDROP_ACT
  FDROP_OVER FDROP_FIN FDROP_STATE FDROP_PEND FDROP_PENDAT FDROP_LASTN
