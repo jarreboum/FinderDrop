@@ -1,6 +1,7 @@
 # FinderDrop
 
-Version 0.1 (`FDROP_VERSION` in `fdrop.h`). Licence 0BSD.
+Version 0.1 (`FDROP_VERSION` in `fdrop.h`). Licence 0BSD. `main` is always
+tested; a tag marks a milestone, not every fix.
 
 Drag files, folders and disks out of a Finder window or off the desktop
 and onto your own window — a desk accessory's, a control panel's or an
