@@ -104,15 +104,17 @@ real Plus.
 
 FinderDrop takes drops from the Finder; it cannot start a drag that the
 Finder receives. A developer using the Drag Manager route will expect
-both directions, so 0.2 adds the other: a drag begun in the host's
-window and dropped in the Finder, as an existing file (the Finder moves
-or copies it) or as a promised one, written where it lands (an FTP
-client's download, an archive's extraction). This is the Drag Manager's
+both directions, so 0.2 adds the other, and no more than the Drag
+Manager does itself (the maintainer's ruling, 2026-11-22): a drag begun
+in the host's window and dropped in the Finder, carrying either an
+existing file, which the Finder moves or copies, or data such as `TEXT`
+or `PICT`, which the Finder turns into a clipping. A file the host would
+write where the drop lands (a promised file) is not part of it. This is the Drag Manager's
 own job, so it is built on that route alone: System 7.5 and later, and
 7.0 to 7.1 with Apple's Drag and Drop extension. Below that it is not
 offered, because the Finder accepts drags only from its own icons and
 under the single Finder is not even running beside the host; the
 README says so where the feature is described.
 
-**What closes it:** the call, a test of both kinds of drag on 7.5.3 and
+**What closes it:** the call, a test of a file and of a clipping on 7.5.3 and
 Mac OS 9 under emulation, then on a real machine.
