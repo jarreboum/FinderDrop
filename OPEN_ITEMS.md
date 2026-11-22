@@ -149,12 +149,14 @@ is measured on it, not assumed.
 today's drops pays nothing for any of them; the rule of the switches
 that exist holds for these too (a build holds nothing of a switch that
 is off, and `examples/check_switches.sh` checks it). The names are
-proposals, to be settled with the code: `FDROP_DRAG_OUT` for 1 to 3
-(one call, so one switch), `FDROP_PROMISE` for 4, `FDROP_RECV_DATA` for
+proposals, to be settled with the code: `FDROP_DRAG_FILE` for 1 and
+`FDROP_DRAG_DATA` for 2, over a shared drag core (3) that is built in
+whenever either is on, so a host that drags only text carries nothing
+for files and the reverse; `FDROP_PROMISE` for 4, `FDROP_RECV_DATA` for
 5, `FDROP_COPY_MOVE` for 6, `FDROP_LAZY_DATA` for 7, `FDROP_TRASH` for
 8 and `FDROP_DRAG_LOOK` for 9; 10, if it is ever in, its own. A switch
-that needs another says so (`FDROP_PROMISE` and `FDROP_LAZY_DATA` need
-`FDROP_DRAG_OUT`; all of them need `FDROP_RECEIVER`'s Drag Manager),
+that needs another says so (`FDROP_PROMISE` needs the drag core, and
+`FDROP_LAZY_DATA` needs `FDROP_DRAG_DATA`; all of them need `FDROP_RECEIVER`'s Drag Manager),
 and the README's cheat sheet gains a column for what they add.
 
 **What closes each:** its call, its switch, a test on 7.5.3 and Mac OS
