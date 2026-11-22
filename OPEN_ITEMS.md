@@ -107,14 +107,16 @@ Finder receives. A developer using the Drag Manager route will expect
 both directions, so 0.2 adds the other, and no more than the Drag
 Manager does itself (the maintainer's ruling, 2026-11-22): a drag begun
 in the host's window and dropped in the Finder, carrying either an
-existing file, which the Finder moves or copies, or data such as `TEXT`
-or `PICT`, which the Finder turns into a clipping. A file the host would
-write where the drop lands (a promised file) is not part of it. This is the Drag Manager's
+existing file, which the Finder moves or copies; data such as `TEXT`
+or `PICT`, which the Finder turns into a clipping; or a promised file
+(`flavorTypePromiseHFS`), which the host writes itself where the drop
+lands when the Drag Manager calls it back. Whether every Finder from
+7.5 on accepts a promised file is to be measured, not assumed. This is the Drag Manager's
 own job, so it is built on that route alone: System 7.5 and later, and
 7.0 to 7.1 with Apple's Drag and Drop extension. Below that it is not
 offered, because the Finder accepts drags only from its own icons and
 under the single Finder is not even running beside the host; the
 README says so where the feature is described.
 
-**What closes it:** the call, a test of a file and of a clipping on 7.5.3 and
+**What closes it:** the call, a test of a file, a clipping and a promised file on 7.5.3 and
 Mac OS 9 under emulation, then on a real machine.
