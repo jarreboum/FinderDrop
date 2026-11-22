@@ -100,23 +100,50 @@ quick press, which says whether any offset of zero is a click.
 under the single Finder and MultiFinder and on Finder 5.4, then on a
 real Plus.
 
-## 6. Dragging out to the Finder (a goal for 0.2)
+## 6. The rest of the Drag Manager, ranked by how feasible it is
 
-FinderDrop takes drops from the Finder; it cannot start a drag that the
-Finder receives. A developer using the Drag Manager route will expect
-both directions, so 0.2 adds the other, and no more than the Drag
-Manager does itself (the maintainer's ruling, 2026-11-22): a drag begun
-in the host's window and dropped in the Finder, carrying either an
-existing file, which the Finder moves or copies; data such as `TEXT`
-or `PICT`, which the Finder turns into a clipping; or a promised file
-(`flavorTypePromiseHFS`), which the host writes itself where the drop
-lands when the Drag Manager calls it back. Whether every Finder from
-7.5 on accepts a promised file is to be measured, not assumed. This is the Drag Manager's
-own job, so it is built on that route alone: System 7.5 and later, and
-7.0 to 7.1 with Apple's Drag and Drop extension. Below that it is not
-offered, because the Finder accepts drags only from its own icons and
-under the single Finder is not even running beside the host; the
-README says so where the feature is described.
+FinderDrop takes files dropped from the Finder, by the Drag Manager
+where there is one (and highlights the window while a drag is over it,
+`ShowDragHilite`) and by its own sender where there is not. What
+follows is everything else the Drag Manager does, **easiest first**.
+Not all of it is for 0.2; the ruling of 2026-11-22 is that 0.2 sends
+what the Drag Manager sends itself, and the first four are that. All of
+it lives on the Drag Manager route alone: System 7.5 and later, and 7.0
+to 7.1 with Apple's Drag and Drop extension. Below that the Finder
+accepts drags only from its own icons, and under the single Finder is
+not running beside the host at all; the README says so wherever one of
+these is described. Whether a given Finder accepts a given kind of drag
+is measured on it, not assumed.
 
-**What closes it:** the call, a test of a file, a clipping and a promised file on 7.5.3 and
-Mac OS 9 under emulation, then on a real machine.
+1. **Dragging an existing file out to the Finder**, which moves or
+   copies it. The host names the file; the Finder does the rest.
+2. **Dragging data out (`TEXT`, `PICT` and the rest)**, which the Finder
+   turns into a clipping. The host describes what it drags; the Finder
+   writes the clipping.
+3. **Several items in one drag, each in several flavours** (a picture
+   as both `PICT` and `TEXT`, say), the receiver choosing. Part of the
+   same call as 1 and 2 rather than a feature of its own.
+4. **A promised file** (`flavorTypePromiseHFS`): the host writes the
+   file itself where the drop lands, when the Drag Manager calls it
+   back (`GetDropLocation`). The writing is the host's and happens
+   while the Finder waits; that it takes long on a floppy is said
+   where it is described.
+5. **Receiving data, not only files**: text, pictures and clippings,
+   from another program or from a clipping file dragged out of the
+   Finder. The other half of 2; a new kind of queue entry, since
+   today's holds a volume, a folder and a name.
+6. **Copy or move**: telling the host whether the Option key asked
+   for a copy (`GetDragModifiers`), and the feedback to match.
+7. **Data supplied only when asked for** (a send-data procedure), so a
+   large picture is not copied unless it is dropped.
+8. **A drag that ended on the Trash**, so the host can delete what was
+   dragged there, as the Finder does.
+9. **A drag's look**: a custom outline, and a see-through image of the
+   items (`SetDragImage`, Mac OS 8.5 and later). Cosmetic.
+10. **Drags inside the host or between two programs** (moving text in
+    a document, say). The Drag Manager does it, but no Finder is in
+    it: it may be beyond what a library named for the Finder should
+    hold, and is listed so that the question is asked, not forgotten.
+
+**What closes each:** its call, a test on 7.5.3 and Mac OS 9 under
+emulation, then on a real machine.
