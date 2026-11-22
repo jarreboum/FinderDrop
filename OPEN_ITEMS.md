@@ -145,5 +145,17 @@ is measured on it, not assumed.
     it: it may be beyond what a library named for the Finder should
     hold, and is listed so that the question is asked, not forgotten.
 
-**What closes each:** its call, a test on 7.5.3 and Mac OS 9 under
-emulation, then on a real machine.
+**Each is a build switch**, off by default, so a host that wants only
+today's drops pays nothing for any of them; the rule of the switches
+that exist holds for these too (a build holds nothing of a switch that
+is off, and `examples/check_switches.sh` checks it). The names are
+proposals, to be settled with the code: `FDROP_DRAG_OUT` for 1 to 3
+(one call, so one switch), `FDROP_PROMISE` for 4, `FDROP_RECV_DATA` for
+5, `FDROP_COPY_MOVE` for 6, `FDROP_LAZY_DATA` for 7, `FDROP_TRASH` for
+8 and `FDROP_DRAG_LOOK` for 9; 10, if it is ever in, its own. A switch
+that needs another says so (`FDROP_PROMISE` and `FDROP_LAZY_DATA` need
+`FDROP_DRAG_OUT`; all of them need `FDROP_RECEIVER`'s Drag Manager),
+and the README's cheat sheet gains a column for what they add.
+
+**What closes each:** its call, its switch, a test on 7.5.3 and Mac OS
+9 under emulation, then on a real machine.
