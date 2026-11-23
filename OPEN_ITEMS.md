@@ -109,8 +109,19 @@ drag without a click has to be found in the Finder's own handling of
 the result, or in what it keeps of the last click; that has not been
 read.
 
-Not run: a drag the Finder alone brings back to where it began, then a
-quick press, which says whether any offset of zero is a click.
+*Not the fix either: forgetting the Finder's click.* Finder 6.1.8
+counts presses (A5-relative globals: the count, the last press's tick
+and point); a count above 1 opens, and nothing resets it after a drag,
+so a drag that moves the icon escapes only because the next press lands
+elsewhere. Clearing that count after a taken drop, or moving the last
+press's tick back, stops the alert after one drop, and a real
+double-click still opens; but two drops in quick succession then a
+press are neither opened nor taken, by something else in the Finder not
+found. The same count is in every Finder from System 2.1 to 6.1.8;
+Finder 1.1g has none. Changing the system's double-click time was ruled
+out: it is the user's setting, not the library's.
+
+It is kept as a known limit of the library.
 
 **What closes it:** a change, a quick double drop on the emulator
 under the single Finder and MultiFinder and on Finder 5.4, then on a
