@@ -117,8 +117,10 @@ elsewhere. Clearing that count after a taken drop, or moving the last
 press's tick back, stops the alert after one drop, and a real
 double-click still opens; but two drops in quick succession then a
 press are neither opened nor taken, by something else in the Finder not
-found. The same count is in every Finder from System 2.1 to 6.1.8;
-Finder 1.1g has none. Changing the system's double-click time was ruled
+found. The same code reading that count is in every Finder from System 2.1 to
+6.1.8. Finder 1.1g does not have that code; how it tells a double-click,
+and whether two quick drops open a file there, has not been read or run.
+Changing the system's double-click time was ruled
 out: it is the user's setting, not the library's.
 
 It is kept as a known limit of the library.
