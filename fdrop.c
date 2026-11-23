@@ -1996,6 +1996,83 @@ static Point port_origin(GrafPtr port)
 #define kDragFrame    34      /* everything up to and including the result */
 #define kDragSpan     0x100L  /* how far one routine's call sites may lie apart */
 
+#if FDROP_OWN_ROUTE || FDROP_ROM_ROUTE
+/*
+ * ---- forgetting the click a taken drop leaves behind ----
+ *
+ * A drop that is taken ends the drag at offset zero, which the Finder
+ * reads as a click on the icons where they lie.  Its mouse-down handler
+ * has already counted the press, in a word of its A5 world: one more
+ * for a press within twice DoubleTime and the slop of the last, 1
+ * otherwise.  A press on the same icon soon after the drop counts 2 and
+ * opens it.  A drag that moved the icon escapes only because the next
+ * press is somewhere else.
+ *
+ * The count is found where the Finder reads it, in the routine that
+ * calls the icon's click handler: walking up from the drag's frame, the
+ * first return address preceded by
+ *
+ *     clr.w c(a5); cmpi.w #1,c(a5); sgt -(sp); [ble.s *+6; clr.w c(a5);]
+ *     move.l d7,-(sp); move.l x(a5),-(sp); jsr d16(pc)
+ *
+ * with one c throughout gives c, and the word is cleared, as the Finder
+ * clears it itself after a double click; the next press counts 1.
+ * Anything else is left alone.  NOTES.md, "A taken drop is counted as a
+ * click, and the count is the Finder's".
+ */
+#define kCurrentA5Addr  0x0904L
+#define kClickFrames    6       /* frames looked at, the drag's first */
+
+static Boolean click_site(const unsigned char *r, short *c)
+{
+    const unsigned char *p = r - 10;    /* the move.l d7 */
+    short tail = 0;
+
+    if (rec_word(r - 4) != 0x4EBA || rec_word(r - 8) != 0x2F2D
+        || rec_word(p) != 0x2F07)
+        return false;
+    if (rec_word(p - 6) == 0x6F04 && rec_word(p - 4) == 0x426D) {
+        tail = rec_word(p - 2);         /* ble.s; clr.w c(a5) */
+        p -= 6;
+    }
+    if (rec_word(p - 2) != 0x5EE7 || rec_word(p - 8) != 0x0C6D
+        || rec_word(p - 6) != 0x0001 || rec_word(p - 12) != 0x426D
+        || rec_word(p - 4) != rec_word(p - 10) || rec_word(p - 4) >= 0
+        || (tail != 0 && tail != rec_word(p - 4)))
+        return false;
+    *c = rec_word(p - 4);
+    return true;
+}
+
+static void forget_click(long a6)
+{
+    long fp = a6;
+    int n;
+
+    for (n = 0; n < kClickFrames; n++) {
+        const unsigned char *r;
+        short c;
+        long up;
+
+        if ((fp & 1L) != 0 || fp + 8 > *(long *)kCurStackBaseAddr)
+            return;
+        r = (const unsigned char *)blob_long((const unsigned char *)fp + 4);
+        if (((long)r & 1L) == 0 && r - 24 >= heap_start()
+            && r <= heap_end() && click_site(r, &c)) {
+            unsigned char *w = (unsigned char *)(*(long *)kCurrentA5Addr + c);
+
+            w[0] = 0;
+            w[1] = 0;
+            return;
+        }
+        up = blob_long((const unsigned char *)fp);  /* the caller's A6 */
+        if (up <= fp)
+            return;
+        fp = up;
+    }
+}
+#endif
+
 #if FDROP_OWN_ROUTE
 /* Whether a _FindWindow call, returning to `ret` with the caller's A6 at
    `a6`, is the action procedure of a Finder's drag (above). */
@@ -3008,6 +3085,7 @@ static long rom_answer(Point *pt, long ret, long a6)
         if (!FDROP_ACT)
             return 0;                   /* the Finder's own target */
         set_blob_long((unsigned char *)f + kDragResult, 0L);
+        forget_click((long)f);
         DGINC(kDgGetMouse);
         answer_start(pt);
         return 1;
@@ -3164,6 +3242,7 @@ long fdrop_answer(Point *pt, long ret, long a6)
     if (!FDROP_ACT)
         return 0;                       /* the Finder's own target */
     set_blob_long((unsigned char *)f + kDragResult, 0L);
+    forget_click((long)f);
     DGINC(kDgGetMouse);
     answer_start(pt);
     return 1;
