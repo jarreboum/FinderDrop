@@ -119,9 +119,12 @@
 *
 * FDROP_BUSY keeps the C half from being entered again while it is
 * already running.
-#if FDROP_PATCH_FW    /* not patched at all in a build for the 64K ROM's route alone */
+
+* not patched at all in a build for the 64K ROM's route alone
+#if FDROP_PATCH_FW
 FDROP_FW:
-#if FDROP_OWN_ROUTE   /* else: nothing is recognised here, and it passes on */
+* without the own route nothing is recognised here, and it passes on
+#if FDROP_OWN_ROUTE
 	movem.l	%d0-%d2/%a0-%a1,-(%sp)   | five longs: everything below +20
 #if FDROP_DIAG
 	lea	FDROP_DG+102(%pc),%a1      | word 51, kDgFwEntries: every entry
@@ -147,7 +150,8 @@ FDROP_FW:
 	| the real trap expects them.
 	move.l	FDROP_FW_OLD(%pc),-(%sp)
 	rts
-#endif  /* FDROP_PATCH_FW */
+* the end of FDROP_PATCH_FW
+#endif
 
 FDROP_GM:
 	movem.l	%d0-%d2/%a0-%a1,-(%sp)
@@ -203,7 +207,8 @@ FDROP_GM:
 	movem.l	(%sp)+,%d0-%d2/%a0-%a1
 	move.l	FDROP_GM_OLD(%pc),-(%sp)
 	rts
-#endif  /* FDROP_SENDER */
+* the end of FDROP_SENDER
+#endif
 
 * ---- the state ----
 *
