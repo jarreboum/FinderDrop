@@ -781,6 +781,59 @@ every CODE resource for the twelve bytes. System 7's CODE is
 *Run on:* every site in the table from 5.5 to 6.1.8, in an emulated
 Plus -- "The recognition the survey read is the one that runs", below.
 
+### A taken drop is counted as a click, and the count is the Finder's
+
+*Found on:* Finder 6.1.8 (System 6.0.8), read statically on the host;
+the same bytes searched for in every Finder below.
+
+The Finder decides a double click by counting presses, not by asking
+anything after the drag. Its mouse-down handler (6.1.8: CODE 1 +0x32E)
+stores twice `DoubleTime` in -216(A5), adds one to the count at
+-218(A5), and sets the count back to 1 when this press is later than
+the last press at -210(A5) plus that, or outside the slop of the last
+press's point at -222(A5); then it saves this press's time and point.
+The caller of the icon's click handler (CODE 2 +0x1E24) reads it:
+
+    clr.w -218(a5)          ; when the Option key is down
+    cmpi.w #1,-218(a5)
+    sgt -(sp)               ; the click handler's "double" argument
+    ble.s *+6
+    clr.w -218(a5)          ; a double click is spent
+    move.l d7,-(sp)
+    move.l -460(a5),-(sp)
+    jsr d16(pc)             ; the click handler, which drags (CODE 2 +0x45A)
+
+Nothing after a drag touches the count, moved or not. A drag that moves
+the icon escapes because the next press lands somewhere else and fails
+the slop; a taken drop ends at offset zero, the icon has not moved, and
+a press on it within the time counts 2 and opens it. So the sender
+clears the count after a taken drop, as the Finder does after a double
+click: the next press counts 1, and a real double click after it still
+counts 2. The offset is not written down: `forget_click` walks the A6
+chain up from the drag's frame to the first return address preceded by
+those bytes, with one offset in all three places, and leaves everything
+alone if there is none. `DoubleTime` is not touched.
+
+| Finder, or the disk searched | count | the read, tail `ble.s; clr.w` | mouse-down store `3038 02F2 D040 3B40` |
+|---|---|---|---|
+| 6.1.8; the 6.0 to 6.0.7, 4.2 and 4.3 disks; the 3.4 disk | -218 | yes | yes, the same globals |
+| 5.5 (3.3, 4.1), 5.4 (4.0); the 2.1, 3.1 and 3.2 disks | -218 | yes | in another sequence |
+| the System 2.0 disk with Finder 4.1 | -218 | no | in another sequence |
+| the System 2.0 disk with Finder 1.1g | none found | -- | in another sequence |
+
+*How to repeat it:* search the Finder file, or the disk image, for
+`0C6D 0001 FF26 5EE7`; the store is `3038 02F2 D040 3B40`.
+
+*Run on:* 6.1.8 in an emulated Plus at 1 MB, single Finder, twice. The
+count reads 0 after a taken drop, and a press on the icon straight after
+one drop no longer opens it, while a real double click 3 s later still
+does. **Not yet right:** two fast drags 0.5 s apart after that are not
+taken -- the final `_GetMouse` sees the button held and the pointer away
+from the host window -- where the same sequence with nothing cleared, or
+with `DoubleTime` held at 0, takes both. Why is open. Moving the last
+press's time at -210(A5) back instead of clearing the count is the next
+thing to try; it was built and never got the emulator.
+
 ### Under MultiFinder a trap patch belongs to the layer that called SetTrapAddress, wherever its code is
 
 *Found on:* System 6.0.8 under MultiFinder, Macintosh Plus at 4 MB,
