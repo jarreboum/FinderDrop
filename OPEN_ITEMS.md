@@ -1,4 +1,4 @@
-# What is missing from the drag library
+# What is open in the drag library
 
 What is open, and nothing that is closed: an item that is done is deleted
 from here, not marked. What was built and taken back out is
@@ -10,7 +10,21 @@ wherever the machine has one. The choice is built and does not move:
 below 6.0.4 there is no Gestalt and never a Drag Manager, from 6.0.4 the
 library asks.
 
+What is open is of three kinds, and they are kept apart:
+
+- **Part 1, built and not yet run on a real machine** (items 1 to 4):
+  the code is there and has run under emulation, or is the same code a
+  run has reached; what is missing is a manual test on hardware this
+  bench has not got.
+- **Part 2, a known bug** (item 5): it misbehaves on a real machine, and
+  the cause is understood but not fixed.
+- **Part 3, still to build** (item 6): features, ranked, with the
+  releases they are planned for.
+
 ---
+
+# Part 1. Built, not yet run on a real machine
+
 
 ## 1. A cache with no `_HWPriv` and no flush: a 68000-ROM machine with an accelerator
 
@@ -69,6 +83,8 @@ run: the 64K ROM takes the same path.
 second floppy drive and an MFS floppy ejected with Command-E: a file
 off it, and the disk's own icon.
 
+# Part 2. A known bug
+
 ## 5. Two quick drops in succession open the file
 
 On a real Macintosh Plus, System 4.0 (Finder 5.4), a file dropped on
@@ -100,7 +116,9 @@ quick press, which says whether any offset of zero is a click.
 under the single Finder and MultiFinder and on Finder 5.4, then on a
 real Plus.
 
-## 6. The rest of the Drag Manager, ranked by how feasible it is
+# Part 3. Still to build
+
+## 6. The rest of the Drag Manager, 0.2 and after, ranked by how feasible it is
 
 FinderDrop takes files dropped from the Finder, by the Drag Manager
 where there is one (and highlights the window while a drag is over it,
