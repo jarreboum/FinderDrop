@@ -378,3 +378,6 @@ says what it is under.
 - `PARKED.md` — the System 7 sender: what was tried, and why it
   could not be made to work properly.
 - `ARCHAEOLOGY.md` — the runs behind numbers in the code.
+- `HISTORY.md` — the notebook of the probe that came before the
+  library: how the sender was found, wrong turns included. Stale by
+  design; `NOTES.md` is what to believe.
