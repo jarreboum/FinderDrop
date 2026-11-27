@@ -4829,9 +4829,13 @@ refused by `takeable`, as before.
 | Classic, 6.0.8L | ReadMe and TeachText | taken | taken |
 | Plus, 6.0.8 | the disk, a folder and a file off the desktop | taken | taken |
 
-Not run after the fix: an MFS window and a folder's window, whose
-branches the fix leaves as they were and which `check_switches.sh` and
-the three example builds compile.
+The two branches the fix leaves as they were, run after it on the Plus
+under 6.0.8: an MFS floppy's window under the single Finder, the eight
+drags of the 6.0.8 row of "Finders 5.4 to 6.1.8 take a drop from an
+MFS volume", each listing what that entry records (`mfsown/run6.sh`
+with `ctl6 single`); and a file out of a FOLDER's window viewed by
+icon, taken, step 5. The same folder viewed by name refuses at step 97
+before the fix and after it (`OPEN_ITEMS.md`).
 
 *How to repeat it:* the rows of the entry above, with `--from 88,95`;
 the Twin disk is that disk with `hcopy` of a file Twin and

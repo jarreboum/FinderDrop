@@ -16,9 +16,9 @@ What is open is of three kinds, and they are kept apart:
   the code is there and has run under emulation, or is the same code a
   run has reached; what is missing is a manual test on hardware this
   bench has not got.
-- **Part 2, a known bug** (item 4): it misbehaves on a real machine, and
-  the cause is understood but not fixed.
-- **Part 3, still to build** (item 5): features, ranked, with the
+- **Part 2, known bugs** (items 4 and 5): each misbehaves, and the
+  cause of item 4 is understood but not fixed.
+- **Part 3, still to build** (item 6): features, ranked, with the
   releases they are planned for.
 
 ---
@@ -69,7 +69,7 @@ run: the 64K ROM takes the same path.
 second floppy drive and an MFS floppy ejected with Command-E: a file
 off it, and the disk's own icon.
 
-# Part 2. A known bug
+# Part 2. Known bugs
 
 ## 4. Two quick drops in succession open the file
 
@@ -115,9 +115,23 @@ It is kept as a known limit of the library.
 under the single Finder and MultiFinder and on Finder 5.4, then on a
 real Plus.
 
+## 5. A file in a window viewed by name is refused
+
+Under System 6.0.8 on an emulated Plus, a file dragged out of a folder
+window viewed by name (the Finder's list view) onto the accessory is
+refused whole: step 97, not exactly one icon under the press. The same
+file, the same window viewed by icon, is taken. Measured with the
+library at a523b25 and at 97c5dc2, the same both times, so it is not
+that change; it has never been run before. Not read: what the Finder's
+record holds for a list row. The hit test reads the icon's position,
+which a list view does not draw at.
+
+**What closes it:** the press found by the row in a list view, then a
+file and a folder out of one, under the single Finder and MultiFinder.
+
 # Part 3. Still to build
 
-## 5. The rest of the Drag Manager, 0.2 and after, ranked by how feasible it is
+## 6. The rest of the Drag Manager, 0.2 and after, ranked by how feasible it is
 
 FinderDrop takes files dropped from the Finder, by the Drag Manager
 where there is one (and highlights the window while a drag is over it,
