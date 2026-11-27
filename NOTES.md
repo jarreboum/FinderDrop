@@ -4918,3 +4918,30 @@ menu.
 
 Not run: the ROM route of Finders 1.1g to 5.3, which this does not
 touch; a real Macintosh.
+
+## Session 7 on the Plus: an MFS floppy's files, from the bench floppies
+
+*Run 2026-11-27 on the real Plus at 1 MB, started from the bench floppy
+`FinderDrop System 6.0.8` without MultiFinder, the diagnostic
+accessory, the 400K `FinderDrop MFS` floppy put in after the startup
+disk was ejected; one floppy drive, the two disks swapped as the Finder
+asked. Library at e472780.* Every step of `BENCH.md`'s Session 7 as
+predicted: a file and two files out of the floppy's window, a file put
+in a new folder and the folder dragged, the file out of the folder's
+window, a file off the desktop, the floppy's own icon, the Trash with a
+thrown-away file in it, a dimmed file after Command-E, and a startup
+disk file with a floppy file off the desktop together. The first time,
+New Folder was dimmed: the floppy's write-protect tab was closed, and
+nothing else; unlocked, the folder steps went as predicted.
+
+*Not explained yet, and not this session's:* started from the same
+floppy and left at the desktop with nothing opened, the Plus put up
+"Sorry, a system error occurred. coprocessor not installed" (a line-F
+exception) after about half an hour, with no sound from the floppy
+drive before it. Nothing of the library runs unless a host is opened:
+the control panel has no startup code, and the accessory is inert in
+the System file. On an emulated Plus the same floppy, and Apple's own
+6.0.8 disk with the same three files taken off, sat idle far longer
+than that with no bomb. The test that decides it is that control disk,
+idle on the real Plus: `Control 6.0.8.image` beside the bench floppies.
+

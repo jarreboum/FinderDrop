@@ -71,6 +71,8 @@ set serves the two machines.
     `Eps`, for Session 7. It does not start a machine.
   - `FinderDrop App.bin` and `FinderDrop control panel.bin`, MacBinary,
     for the machines of Session 6, which do not need a floppy.
+- [ ] **Unlock the MFS floppy too.** Locked, the Finder dims New Folder
+      on it, which Session 7 needs; every drop still works.
 - [ ] **MultiFinder** is on the 4.3, 6.0.3 and 6.0.8 floppies, not
       chosen: Set Startup in the Special menu chooses it, and the floppy
       remembers.
@@ -91,15 +93,13 @@ taken drops.
 - [ ] **iMac G3, Mac OS 9:** the same two. This is the 68K code under
       the PowerPC's emulator, which only an emulated machine has run.
 
-## Session 7 — an MFS floppy, on the Plus and on the SE/30
+## Session 7 — an MFS floppy, on the SE/30
 
-Finders 5.4 to 6.1.8 take a 400K floppy's files since this was written,
-and only emulated machines have done it (`NOTES.md`, the entry
-on Finders 5.4 to 6.1.8 taking a drop from an MFS volume). An MFS
-volume has no directories, so every file arrives in directory 0. Run
-it on the Plus from the `FinderDrop System 6.0.8` floppy without
-MultiFinder, then on the SE/30 from the same floppy with MultiFinder
-chosen; the accessory either time.
+Run on the Plus without MultiFinder, every step as predicted
+(`NOTES.md`, "Session 7 on the Plus"); what is left is the SE/30, from
+the `FinderDrop System 6.0.8` floppy with MultiFinder chosen, the
+accessory. An MFS volume has no directories, so every file arrives in
+directory 0.
 
 With one drive the two floppies share it, so the Finder will ask for
 each by name as it needs it: put in the one it names, as often as it
