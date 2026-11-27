@@ -4805,6 +4805,9 @@ are let go at 350,200, where the accessory's window shows beside it.
 
 ## An icon in the top-left corner of a startup disk's window was refused
 
+*(Since overtaken: nothing compares the press with an icon any more --
+"The selection is the drag, in every view".)*
+
 *Found and fixed 2026-11-27, emulated.* The Finder keeps a record for
 the **System** and one for the **Finder** whose container is the
 startup disk's window and whose directory is the System Folder's (22 on
@@ -4844,3 +4847,50 @@ the Twin disk is that disk with `hcopy` of a file Twin and
 --step w:4 --step c:25,200 --step w:2 --from 45,105 --target 224,268
 --front 224,268`, DISK being the System 6 disk with Corner placed at
 (0,1) and the System Folder at (60,280).
+
+## The selection is the drag, in every view
+
+*Found and changed 2026-11-27, emulated.* `resolve_drag` compared the
+press with each record's position and wanted exactly one selected icon
+under it. The position is a 32-pixel square at the icon view's place,
+and it refused good drags four ways: a window viewed by name, date,
+size or kind (its rows are drawn where the positions say nothing, zero
+hits); a press on an icon's NAME, below a large icon or beside a small
+one (zero); two icons overlapping (two); and the corner of the startup
+disk's window (the entry above). What it took was always the window's
+selection, which is what the Finder drags: it selects what was pressed
+before its drag routine runs. So the comparison is gone, and the check
+is that something in that window, or on the desktop, is selected;
+everything else holds (each selected item takeable, nothing selected
+elsewhere).
+
+A rubber band, a press on empty space carried over the host window,
+is not a drag of icons: the routine the sender recognises is never
+entered (SEQ 0), so no selection can be handed over by one.
+
+A container's VIEW is the byte at -88 from its record's name: 1 for by
+Icon and by Small Icon (0x40 in the next byte marks small icons), 2 to
+5 for by Name, Date, Size and Kind, 0 for a folder whose view the
+Finder never set, which it shows by name. Read off two RAM snapshots
+per view, choosing each from the View menu; nothing reads it now.
+
+Run on an emulated Plus at 1 MB, System 6.0.8 under MultiFinder, the
+example accessory built `-DFDROP_DIAG=1`; the fifth word read out of a
+RAM snapshot by `statewords.py`:
+
+| the drag | before (28a91d5) | after |
+|---|---|---|
+| a file out of a folder viewed by name | refused, step 97 | taken, step 5 |
+| two files out of it, shift-clicked | -- | both taken |
+| a file pressed on its name, by Icon | -- | taken |
+| a file pressed on its name, by Small Icon | -- | taken |
+| two files overlapping by half an icon, pressed where they overlap | -- | the one the Finder selected, Alpha, alone |
+| a rubber band on the desktop with DragMe selected, let go over the host | -- | not recognised, nothing handed over |
+| the same in a folder's window with its file selected | -- | the same |
+| the disk, a folder and DragMe off the desktop | taken | taken |
+| the Installer in the corner of 6.0.8L's disk, on the Classic | taken | taken |
+| the eight MFS drags of `mfsown/run6.sh` with `ctl6 single` | Received 9 | Received 9 |
+
+Not run: the ROM route of Finders 1.1g to 5.3, which this does not
+touch; a shift-press that deselects an icon and drags on; System 4.1
+and the 64K ROM.

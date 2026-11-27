@@ -235,8 +235,13 @@ enum {
     kStepNotInFinderWindow  = 91,   /* not pressed in a Finder window or on
                                        the desktop */
     kStepFolderUnnamed      = 96,   /* the window's record names no folder */
-    kStepNotOneIcon         = 97,   /* not exactly one icon under the press */
-    kStepIconNotSelected    = 98,   /* the pressed icon not selected */
+    kStepNoneSelected       = 97,   /* nothing selected in the window or on
+                                       the desktop under the press (until
+                                       28a91d5: not exactly one icon under
+                                       the press) */
+    /* 98, "the pressed icon not selected", is no longer reached: nothing
+       compares the press with an icon since the selection became the
+       drag (NOTES.md, "The selection is the drag, in every view"). */
     kStepNoRoom             = 99,   /* more than the queue has room for
                                        (both routes) */
 
@@ -291,7 +296,7 @@ enum {
     kDgPressV       = 0,    /* the press, in the coordinates its icon is */
     kDgPressH       = 1,    /*   drawn in (the window's, or global) */
     kDgRecords      = 2,    /* the Finder records the heap walk found */
-    kDgHits         = 3,    /* how many were under the press */
+    kDgHits         = 3,    /* the selected records in the container */
     kDgRefName      = 4,    /* at kStepNotTakeable, the icon refused: its */
     kDgRefParent    = 5,    /*   name's first two characters, its parent, */
     kDgRefVol       = 6,    /*   its vRefNum, and which test it failed */
@@ -1046,7 +1051,6 @@ static void set_blob_long(unsigned char *p, long v)
 #define kRecFlags  (-60)
 #define kRecParent (-12)
 #define kOnDesk    0x0001      /* fOnDesk, in kRecFlags */
-#define kIconSize  32
 #define kRootDirID 2L
 #define kRootParID 1L          /* the root's parent: what names a volume */
 #define kSigHFS    0x4244      /* 'BD', an HFS volume */
@@ -2158,8 +2162,16 @@ static const unsigned char *rec_by_handle(long want)
  * The files are the SELECTION, because that is what the Finder drags.
  * One walk of the Finder's records checks all of it:
  *
- *   exactly ONE record in that container is under the press, and it is
- *     selected (the drag cannot be carrying an unselected icon);
+ *   at least one record in that container is SELECTED.  Nothing compares
+ *     the press with an icon's position: the Finder selects what was
+ *     pressed before its drag routine runs, in every view, and a press
+ *     that starts no icon drag (a rubber band) never reaches here.  An
+ *     icon's position is the icon view's even while the window is a
+ *     list, a name or a small icon is drawn outside its square, and the
+ *     Finder keeps records of the System and the Finder in the startup
+ *     disk's window where it draws nothing; each of those refused a good
+ *     drag when the press was compared (NOTES.md, "The selection is the
+ *     drag, in every view");
  *   every selected record in that container is taken, each a visible file
  *     or folder the File Manager finds where the record says (takeable),
  *     and on the desktop one whose record says fOnDesk, or a disk, or the
@@ -2179,11 +2191,11 @@ static short resolve_drag(void)
 {
     WindowPeek w;
     Point      start, at, org;
-    const unsigned char *pos, *nm, *walk;
+    const unsigned char *nm, *walk;
     unsigned char vn[32];
     long       cont, desk, dirID = 0, h;
-    short      vol = 0, base, room, n = 0, hits = 0, k, seen = 0;
-    Boolean    onDesk, pressedSel = false;
+    short      vol = 0, base, room, n = 0, k, seen = 0, chosen = 0;
+    Boolean    onDesk;
 
     FDROP_STATE = kDragRefused;         /* refused, unless all of it holds */
     FDROP_PEND = 0;
@@ -2235,7 +2247,7 @@ static short resolve_drag(void)
     while ((nm = rec_next(&walk, &h)) != 0) {
         long    c = blob_long(nm + kRecCont);
         Boolean sel = (Boolean)((nm[kSelOff] & kSelBit) != 0);
-        short   v = vol, top, left;
+        short   v = vol;
         long    d = dirID;
 
         seen = (short)(seen + 1);
@@ -2245,30 +2257,9 @@ static short resolve_drag(void)
             }
             continue;
         }
-        pos = nm + kRecPos;
-        top = rec_word(pos);
-        left = rec_word(pos + 2);
-        /*
-         * In an HFS window a record says it is drawn there by its
-         * container AND by its directory, and only both together are
-         * true.  The Finder keeps records of the System and the Finder
-         * whose container is the startup disk's window and whose
-         * directory is the System Folder's, at (0,0) and (0,64), where
-         * it draws nothing: an icon placed in that corner had two hits
-         * and was refused (NOTES.md, "An icon in the top-left corner
-         * of a startup disk's window was refused").  An MFS window's
-         * records all say 0, and an offline folder's directory is not
-         * known, so neither is asked.
-         */
-        if ((onDesk || dirID == kMfsDir || dirID == kAskDir
-             || blob_long(nm + kRecParent) == dirID)
-            && at.v >= top && at.v < top + kIconSize
-            && at.h >= left && at.h < left + kIconSize) {
-            hits = (short)(hits + 1);
-            pressedSel = sel;
-        }
         if (!sel)
             continue;
+        chosen = (short)(chosen + 1);
         if (onDesk && rec_word(nm + kRecVol) == 0
             && blob_long(nm + kRecParent) == 0L) {
             /*
@@ -2335,15 +2326,12 @@ static short resolve_drag(void)
             return k;
     }
     DG(kDgRecords, seen);
-    DG(kDgHits, hits);
+    DG(kDgHits, chosen);
     if (walk == 0) {
         return kStepHeapUnwalkable;
     }
-    if (hits != 1) {
-        return kStepNotOneIcon;
-    }
-    if (!pressedSel) {
-        return kStepIconNotSelected;
+    if (chosen == 0) {
+        return kStepNoneSelected;
     }
     if (n == 0) {
         return kStepNothingToHand;

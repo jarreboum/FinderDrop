@@ -146,6 +146,8 @@ Oldest first; the last row is where the receiver takes over.
   patch in front of it, which is recognised and followed.
 - **Finders 5.4 to 6.1.8** carry one drag routine, the same in all of
   them, so there is one recognition and no table per version.
+  What arrives is the window's selection, in any view: by icon, by
+  small icon or as a list.
 - **Every item is checked with the File Manager**: on HFS, in the
   catalog where the Finder's record says; on MFS (any 400K floppy),
   which has no catalog, by name and file number — out of a window, off
