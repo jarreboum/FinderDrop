@@ -1,21 +1,21 @@
 # BENCH.md — FinderDrop on real Macintoshes, in order
 
-What is left to run on real Macintoshes, in the order that yields the
-most, written for a person at the machine. A session that has been run
-is deleted from here: its results are in `NOTES.md` (Sessions 1 to 5,
-on a Plus and an SE/30, are its bench entries), and the numbers of the
-rest are kept so those entries still name them.
+What is left to run on real Macintoshes, as WALKS: one start-up each,
+in the order that needs the fewest floppy swaps and restarts, each
+doing everything that start-up can test. A walk that has been run is
+deleted from here and its results go in `NOTES.md`, whose bench entries
+name the older numbered sessions (1 to 9) they came from.
 
 **Results do not go in this file.** They go in `NOTES.md`, one
-entry per session, and what a session closes is deleted from
+entry per walk, and what a walk closes is deleted from
 `OPEN_ITEMS.md`. Every "expect" below is a **prediction** read
 off an emulator. A machine that disagrees is the result, not a fault of
-the session; where the day contradicts a step, fix the step here.
+the walk; where the day contradicts a step, fix the step here.
 
 Photograph the screen. There is no screenshot on a Plus, and a bomb box
 is a photograph.
 
-## What a session looks at
+## What a walk looks at
 
 Each example program lists what is dropped on it, one line an item:
 
@@ -32,11 +32,11 @@ Each example program lists what is dropped on it, one line an item:
   drag got. Photograph all of them, before and after the drag;
   `fdrop.c` says what each word holds.
 
-Use the diagnostic builds for every session.
+Every program on the floppies is the diagnostic build.
 
 ## The machines
 
-The sessions are written for these four; any other is named where it
+The walks are written for these four; any other is named where it
 would add something.
 
 - **Macintosh Plus, 1 MB** — the only 68000, and the machine every
@@ -49,7 +49,7 @@ would add something.
   emulator.
 
 **The Plus and the SE/30 are not networked, and each has one floppy
-drive.** Every session on them starts from one of the floppies below,
+drive.** Every walk on them starts from one of the floppies below,
 written by the LC475: the Plus reads nothing denser than 800K, so one
 set serves the two machines.
 
@@ -68,11 +68,13 @@ set serves the two machines.
     with `Inside` in it, and `Views` with `Alpha` and `Beta` overlapping
     by half an icon and `Gamma`. The volume is named for its System.
   - `FinderDrop MFS` (400K, MFS): `Alpha`, `Beta`, `Gamma`, `Delta` and
-    `Eps`, for Session 7. It does not start a machine.
+    `Eps`, for Walk 7. It does not start a machine.
   - `FinderDrop App.bin` and `FinderDrop control panel.bin`, MacBinary,
-    for the machines of Session 6, which do not need a floppy.
+    for the LC475 and the iMac, which do not need a floppy.
+  - `Control 6.0.8`: Apple's own 6.0.8 disk with nothing of ours on
+    it, for Walk 6.
 - [ ] **Unlock the MFS floppy too.** Locked, the Finder dims New Folder
-      on it, which Session 7 needs; every drop still works.
+      on it, which Walk 7 needs; every drop still works.
 - [ ] **MultiFinder** is on the 4.3, 6.0.3 and 6.0.8 floppies, not
       chosen: Set Startup in the Special menu chooses it, and the floppy
       remembers.
@@ -81,35 +83,109 @@ set serves the two machines.
       damaged copy did exactly that and the next was fine (`NOTES.md`,
       the entry on bench Session 2).
 
-## Session 6 — the machines with a Drag Manager
+## The two step lists the walks use
 
-Short: the library patches nothing here, and the LC475 has already
-taken drops.
+**The view steps.** Choose FinderDrop from the Apple menu, then open
+`Views`:
 
-- [ ] **LC475, 7.6.1:** the example application and the control panel,
-      decoded from the two `.bin` files with StuffIt Expander, one drop
-      each. Expect the first line to read "Through the Drag
-      Manager."
-- [ ] **iMac G3, Mac OS 9:** the same two. This is the 68K code under
-      the PowerPC's emulator, which only an emulated machine has run.
+- **V1. View by Name. Drag `Alpha` onto the accessory.** Expect one
+  line naming it.
+- **V2. Select `Alpha` and `Beta` (Shift-click), drag both.** Expect
+  two lines.
+- **V3. View by Small Icon. Drag `Gamma` by its name.** Expect one line.
+- **V4. View by Icon. Drag `Gamma` by the name under its icon.** Expect
+  one line.
+- **V5. Click empty space, then drag from where `Alpha` and `Beta`
+  overlap.** Expect one line, naming whichever of the two the Finder
+  highlights.
+- **V6. Drag `DragMe` off the desktop.** Expect one line.
+- **V7. Press empty space in `Views` and drag a rubber band out over
+  the accessory, let go.** Expect nothing listed.
+- **V8. Select `Alpha` and `Beta`, hold Shift, press `Alpha` and drag
+  onto the accessory.** Expect nothing listed: the Finder deselects it
+  and does not drag.
 
-## Session 7 — an MFS floppy, on the SE/30
+**The title-bar steps,** on whichever window the walk names. Arrange
+`Views` so that it covers part of that window and leaves a strip of its
+title bar showing:
 
-Run on the Plus without MultiFinder, every step as predicted
-(`NOTES.md`, "Session 7 on the Plus"); what is left is the SE/30, from
-the `FinderDrop System 6.0.8` floppy with MultiFinder chosen, the
-accessory. An MFS volume has no directories, so every file arrives in
-directory 0.
+- **T1. Drag `Alpha` and let go on that strip of title bar.** Expect
+  nothing listed, and `Alpha` back in `Views`, not on the desktop.
+- **T2. Drag it again and let go in the window's content.** Expect one
+  line.
 
-With one drive the two floppies share it, so the Finder will ask for
-each by name as it needs it: put in the one it names, as often as it
-asks. Asking is not a result; a refusal of a drop is.
+If a drop is refused that should have been taken, photograph the hex
+words: the fifth is a hundred times the drags recognised plus the step
+it stopped at, and 97 means nothing was selected in that window.
 
-- [ ] **Start from `FinderDrop System 6.0.8` and choose FinderDrop from
-      the Apple menu.** Then select the startup disk's icon and choose
-      Eject from the File menu, and put in `FinderDrop MFS`.
-- [ ] **Open the MFS floppy's window.** Expect `Alpha` to `Eps`, and
-      `FinderDrop MFS` as on any disk.
+## Walk 1 — the Plus, 6.0.8, no MultiFinder
+
+Start from `FinderDrop System 6.0.8`.
+
+- [ ] **T1 and T2 on the accessory.** Then let go once on its frame,
+      the thin edge below the content: nothing listed, `Alpha` back.
+- [ ] **T1 and T2 on the Control Panel**, with FinderDrop selected in
+      it.
+- [ ] **Choose MultiFinder** with Set Startup in the Special menu, and
+      restart: the floppy keeps it for Walk 2 and for Walk 7.
+
+## Walk 2 — the Plus, 6.0.8, MultiFinder
+
+- [ ] **T1 and T2 on the accessory.**
+- [ ] **Launch `FinderDrop App`,** switch back to the Finder, **T1 and
+      T2 on the application's window.** (Without MultiFinder, launching
+      it quits the Finder, and there is nothing to drag from.)
+
+## Walk 3 — the Plus, 6.0.3
+
+Start from `FinderDrop System 6.0.3`.
+
+- [ ] **V1 to V8.**
+- [ ] **T1 on the accessory.**
+- [ ] **Choose MultiFinder** with Set Startup, restart, and **V1 to V3**
+      again.
+
+## Walk 4 — the Plus, 4.3
+
+Start from `FinderDrop System 4.3`: as Walk 3.
+
+- [ ] **V1 to V8.**
+- [ ] **T1 on the accessory.**
+- [ ] **Choose MultiFinder** with Set Startup, restart, and **V1 to V3**
+      again.
+
+## Walk 5 — the Plus, 4.1
+
+Start from `FinderDrop System 4.1`, which has no MultiFinder.
+
+- [ ] **V1 to V8.**
+- [ ] **T1 on the accessory.**
+
+## Walk 6 — the Plus, left alone
+
+Not FinderDrop's, and the reason it is here: started from the
+FinderDrop 6.0.8 floppy and left at the desktop with nothing opened,
+the Plus once put up "coprocessor not installed" after about half an
+hour (`NOTES.md`, the entry on Session 7 on the Plus). This is the
+control.
+
+- [ ] **Start from `Control 6.0.8`, open nothing, and leave it an hour.**
+      A bomb means the machine or the floppies, not the library; none
+      means the next step is the FinderDrop floppy left the same way.
+
+## Walk 7 — the SE/30, 6.0.8 with MultiFinder, and an MFS floppy
+
+Start from the `FinderDrop System 6.0.8` floppy Walk 1 set to
+MultiFinder, and choose FinderDrop from the Apple menu. An MFS volume
+has no directories, so every file arrives in directory 0. With one
+drive the two floppies share it, and the Finder asks for each by name
+as it needs it: put in the one it names, as often as it asks. Asking
+is not a result; a refusal of a drop is.
+
+- [ ] **T1 and T2 on the accessory,** before the swap.
+- [ ] **Eject the startup disk** (select its icon, Eject in the File
+      menu) **and put in `FinderDrop MFS`.** Open its window: `Alpha` to
+      `Eps`.
 - [ ] **Drag one file out of its window.** Expect "file NAME on DISK
       (−2), directory 0" (the number is the volume's and may differ).
 - [ ] **Select two files, drag both.** Expect two lines, directory 0.
@@ -127,77 +203,28 @@ asks. Asking is not a result; a refusal of a drop is.
       drag the Trash.** Expect that file, directory 0, and nothing else.
 - [ ] **Command-E with the floppy's window in front, then drag a dimmed
       file.** Expect one line naming it, directory 0, and no "Please
-      insert the disk": the accessory asks the File Manager nothing about
-      a file in directory 0.
+      insert the disk".
 - [ ] **A file of the startup disk and a file of the floppy, both on
       the desktop, selected together and dragged.** Put `DragMe` on the
       desktop first, while the startup disk is in. Expect two lines:
       the startup disk's in directory 2, the floppy's in directory 0.
 
-If a drop is refused, photograph the hex words: they say where it
-stopped.
+## Walk 8 — the LC475, 7.6.1, the Drag Manager
 
-## Session 8 — the views, on the Plus, one System at a time
+The library patches nothing here. Decode `FinderDrop App.bin` and
+`FinderDrop control panel.bin` with StuffIt Expander, the control panel
+into the Control Panels folder. Expect each window's first line to read
+"Through the Drag Manager."
 
-Since 2026-11-27 a drop is the window's selection, whatever the view,
-and the press is no longer compared with an icon (`NOTES.md`, "The
-selection is the drag, in every view"). Run on the Plus from the
-6.0.8 floppy without MultiFinder (`NOTES.md`, "Session 8 on the Plus,
-6.0.8"), with and without MultiFinder; left are the 4.1, 4.3 and 6.0.3
-floppies the same way, and MultiFinder on 4.3 and 6.0.3. The accessory
-each time.
+- [ ] **The application: a file into its content, then one let go on
+      its title bar.** Expect one line; then nothing more, and the icon
+      going back.
+- [ ] **The control panel: the same two.**
 
-On the 4.1, 4.3 and 6.0.3 floppies, started with no MultiFinder, choose
-FinderDrop from the Apple menu, then open `Views`:
+## Walk 9 — the iMac G3, Mac OS 9
 
-- [ ] **View by Name. Drag `Alpha` onto the accessory.** Expect one
-      line naming it.
-- [ ] **Select `Alpha` and `Beta` (Shift-click), drag both.** Expect
-      two lines.
-- [ ] **View by Small Icon. Drag `Gamma` by its name.** Expect one
-      line.
-- [ ] **View by Icon. Drag `Gamma` by the name under its icon.** Expect
-      one line.
-- [ ] **Click empty space, then drag from where `Alpha` and `Beta`
-      overlap.** Expect one line, naming whichever of the two the
-      Finder highlights.
-- [ ] **Drag `DragMe` off the desktop.** Expect one line.
-- [ ] **Press empty space in `Views` and drag a rubber band out over
-      the accessory, let go.** Expect nothing listed.
-- [ ] **Select `Alpha` and `Beta`, hold Shift, press `Alpha` and drag
-      onto the accessory.** Expect nothing listed: the Finder deselects
-      it and does not drag.
-
-On `4.3` and `6.0.3`, then choose MultiFinder with Set Startup in the
-Special menu, restart, and do the first three steps again.
-
-If a drop is refused, photograph the hex words: the fifth is a hundred
-times the drags recognised plus the step it stopped at, and 97 now means
-nothing was selected in that window.
-
-## Session 9 — the title bar refuses, on the Plus
-
-Since 2026-11-27 a drop let go on a host window's title bar or frame is
-refused and the icons stay where they were (`NOTES.md`, "A release on
-the host's title bar is refused"); before, the Finder moved them to the
-desktop under the window. Only emulated machines have run it. Write
-the bench floppies again first: a copy older than that change has the
-old behaviour. From the `FinderDrop System 6.0.8` floppy:
-
-- [ ] **The accessory, no MultiFinder.** Open `Views` so that it covers
-      part of the accessory, as in the photograph of Session 8. Drag
-      `Alpha` and let go on the strip of the accessory's title bar that
-      shows. Expect nothing listed, and `Alpha` back in `Views`, not on
-      the desktop. Then let go in the accessory's content: one line.
-- [ ] **The same on its frame:** let go on the thin edge of the window
-      below the content. Expect nothing listed, `Alpha` back.
-- [ ] **The control panel:** the same two drops on the Control Panel's
-      title bar, with FinderDrop selected in it, then in its content.
-- [ ] **MultiFinder** (Set Startup, restart): the accessory's title bar
-      and content again; then launch `FinderDrop App`, switch back to
-      the Finder, and the same two drops on the application's window.
-      (Without MultiFinder, launching it quits the Finder, and there is
-      nothing to drag from.)
+- [ ] **As Walk 8.** This is the 68K code under the PowerPC's emulator,
+      which only an emulated machine has run.
 
 ## If one is ever to hand
 
