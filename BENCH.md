@@ -1,12 +1,10 @@
 # BENCH.md — FinderDrop on real Macintoshes, in order
 
-Sessions 1 to 5 have been run, on a Plus and an SE/30
-(`NOTES.md`, the bench entries); Sessions 7 and 8 are new; before them the sender had run only on emulators, and
-the one real machine this library had met, an LC475 under System 7.6.1,
-took its drops through the Drag Manager. This file is the plan for
-closing that:
-the sessions in the order that yields the most, written for a person at
-the machine.
+What is left to run on real Macintoshes, in the order that yields the
+most, written for a person at the machine. A session that has been run
+is deleted from here: its results are in `NOTES.md` (Sessions 1 to 5,
+on a Plus and an SE/30, are its bench entries), and the numbers of the
+rest are kept so those entries still name them.
 
 **Results do not go in this file.** They go in `NOTES.md`, one
 entry per session, and what a session closes is deleted from
@@ -34,8 +32,7 @@ Each example program lists what is dropped on it, one line an item:
   drag got. Photograph all of them, before and after the drag;
   `fdrop.c` says what each word holds.
 
-Use the diagnostic builds for every session. The plain builds are for
-one run at the end of Session 1, to see the shipped bytes work.
+Use the diagnostic builds for every session.
 
 ## The machines
 
@@ -81,137 +78,11 @@ so write 800K for both and one set serves the two machines.
       files will be dragged and one of them put in a folder, so use a
       copy. Do not start up from it: put it in after the machine has
       started from its own disk.
-- [ ] **For Session 4 only:** a System 6.0.4 or earlier that boots the
-      SE/30 (it shipped with 6.0.3), on floppies like everything else.
-- [ ] **For Session 5 only:** an AppleShare server the System 6 machine
-      can reach over AppleTalk, which the compact machines have not got
-      as they stand. The LC475 with File Sharing turned on would be the
-      server, and it needs a LocalTalk connection between its printer
-      port and the compact's — two LocalTalk boxes and their cable, or
-      whatever else joins two printer ports as a network. Without one,
-      Session 5 cannot be run. A server that speaks AFP over TCP alone
-      is no use here: System 6 cannot reach it.
-
-## Session 1 — the Plus, System 6.0.8, no MultiFinder, the control panel
-
-The first time the sender meets hardware, in the form that is easiest to
-install: copy `FinderDrop` off the floppy into the System Folder,
-restart, and open the Control Panel.
-
-- [ ] **Open the Control Panel and select FinderDrop.** Expect its
-      first line to read "Following the Finder's drag."
-- [ ] **Drag `DragMe` out of the disk's window onto the panel.** Expect
-      one line naming it, and the icon back in its window.
-- [ ] **Select `DragMe` and `DragTwo`, drag both.** Expect two lines.
-- [ ] **Drag the long-named file.** Expect its whole name.
-- [ ] **Put `DragMe` on the desktop, drag it from there.** Expect one
-      line.
-- [ ] **Drag the folder.** Expect a line that says folder.
-- [ ] **Drag the disk's own icon.** Expect a line that says disk,
-      directory 1.
-- [ ] **A file off an ejected floppy.** Open a floppy's window, select
-      a file, press Command-E: the icons go dim. Drag the dimmed file
-      onto the panel. Expect the icon back in its window, then "Please
-      insert the disk" naming the floppy; put it back, and expect one
-      line naming the file. The same with another floppy put in first:
-      expect the alert to stay until the right one goes in.
-- [ ] **Drag a file across the panel and let go on the desktop.**
-      Expect nothing listed, and the file on the desktop: that drag is
-      the Finder's.
-- [ ] **Drag a file onto the Control Panel's title bar and let go
-      there.** Expect nothing listed: a release on the title bar is the
-      Finder's, as it is under MultiFinder.
-- [ ] **With the panel still open, drag a file to the Trash and empty
-      it; drag a window by its title bar.** Expect the Finder to behave
-      as it does with the panel closed.
-- [ ] **Close the Control Panel. Drag a file in the Finder.** Expect
-      nothing unusual. Open the panel again and drag onto it. Expect
-      the drop taken. Do the close, open and drag five times.
-- [ ] **The plain build, once:** replace the panel with the plain one,
-      restart, and take one drop out of a window.
-
-If the very first drop is not taken, photograph the hex words and stop
-the session there: every later step depends on it.
-
-## Session 2 — the Plus, the desk accessory
-
-The same library in the form that lives longest on a System 6 machine.
-Install the accessory with Font/DA Mover and choose it from the Apple
-menu.
-
-If it bombs the moment it opens, every time, remove it with Font/DA
-Mover and install it again before believing anything else: on the
-Plus, one damaged copy did exactly that and the next was fine
-(`NOTES.md`, the entry on bench Session 2).
-
-- [ ] **The drops of Session 1**, the first five. Expect the same.
-- [ ] **Close it by its close box, drag in the Finder, open it again,
-      drag onto it.** Five times.
-- [ ] **With the accessory open, launch an application from the
-      Finder.** Expect the accessory to go and the application to run.
-      Quit. Back in the Finder, drag a file from one window to another.
-      Expect an ordinary Finder drag. A bomb here is the case the
-      trampoline's pass-through exists for; photograph it.
-- [ ] **Shut Down from the Special menu with the accessory open.**
-      Expect an ordinary shutdown.
-
-## Session 3 — the Plus, MultiFinder
-
-Set the startup to MultiFinder and restart.
-
-- [ ] **The accessory, from the Finder's Apple menu:** a drop out of a
-      window, two files, the desktop. Expect them taken.
-- [ ] **The example application:** launch it, and with its window
-      showing, switch to the Finder and drag a file onto the window.
-      Expect "Following the Finder's drag." and the file listed.
-- [ ] **Both open at once.** Drag one file onto each. Expect each to
-      list only its own.
-- [ ] **The accessory opened with Option held, over the application.**
-      Hold Option while choosing FinderDrop from the application's
-      Apple menu. Drag a file onto it; expect it taken. Note where the
-      accessory's window is on the screen. Quit the application with
-      Quit in its File menu (or Command-Q). In the
-      Finder, drag a file and let go where that window was. Expect the
-      file to move there. A file that stays put, or a bomb, is the fault
-      the goodbye call was added for. TeachText's Apple menu, with
-      Option held, does as well as the example application's.
-
-## Session 4 — the SE/30: a processor with a cache, and Color QuickDraw
-
-Two open items meet on this machine (`OPEN_ITEMS.md`: a cache
-with no `_HWPriv`, and a colour port). Neither could be run on an
-emulator here.
-
-- [ ] **System 6.0.8: Sessions 1 and 3 again, the first three drops of
-      each.** This is the colour-port question. Whether the Finder's
-      windows on this machine are colour ports is not known; the
-      diagnostic words say which path was taken, so photograph them
-      with each drop. If a Macintosh II family machine with a colour
-      screen is to hand, the same steps there are worth more.
-- [ ] **System 6.0.4 or earlier, the cache on:** open the accessory,
-      take a drop, close it, open it again, take a drop. Twenty times.
-      Expect twenty drops. A crash that comes only sometimes is the
-      finding: it is what a stale instruction cache looks like.
-
-## Session 5 — a file server, System 6
-
-Run on the SE/30 (`NOTES.md`, the entry on a file server).
-What the setup took, for the next time:
-
-- The LC475 is the server: File Sharing on, a folder on its own disk
-  shared, Guest allowed in Users & Groups. It cannot share a volume it
-  has mounted from the NAS.
-- AppleTalk on the LC475 must be set to the printer port, and Apple's
-  LocalTalk Bridge extension, if installed, turned off first: it holds
-  the printer port itself, and the machine froze when both wanted it.
-- On System 6 the AppleShare client is installed with the Installer
-  ("AppleShare (workstation software)"); the `AppleShare` file copied
-  into the System Folder alone gave "Some AppleShare resources were not
-  installed at system startup time".
-- In the drag: a file out of the server volume's window, and the server
-  volume's own icon. A file cannot be put on the desktop from a server
-  volume: the Finder refuses it ("Items from shared volumes may not be
-  moved onto the desktop").
+- [ ] **If the accessory bombs the moment it opens, every time,**
+      remove it with Font/DA Mover and install it again before
+      believing anything else: on the Plus, one damaged copy did
+      exactly that and the next was fine (`NOTES.md`, the entry on
+      bench Session 2).
 
 ## Session 6 — the machines with a Drag Manager
 
@@ -308,12 +179,15 @@ Each of these would be a first, and none is needed before the library
 is used:
 
 - **A Macintosh 128K or 512K on Systems 1.1 to 3.2.** The 64K ROM's
-  path has only run emulated. Session 2's first five steps with the
-  accessory built for it (`examples/README.md` has the flags).
+  path has only run emulated. With the accessory built for it
+  (`examples/README.md` has the flags): a file out of a window, two
+  files, the long-named one, a file off the desktop, the disk's icon.
 - **A 512K with a Hard Disk 20, System 3.3 or 4.1.** The emulated run
   stood an 800K disk in for the drive and left out part of Apple's
   `Hard Disk 20` file.
 - **System 4.0 on anything.** Its disk freezes under emulation before a
   drag can be made.
 - **A Plus with a 68020 or 68030 accelerator, below System 6.0.5.**
-  Session 4's twenty-times step.
+  Open the accessory, take a drop, close it, open it again, take a
+  drop: twenty times. A crash that comes only sometimes is what a stale
+  instruction cache looks like.
