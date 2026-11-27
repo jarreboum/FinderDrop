@@ -2497,42 +2497,65 @@ static Boolean listed(WindowPeek want)
 }
 #endif
 
-static Boolean over_panel(void)
+/*
+ * And the rest of the host window: its title bar and frame, which take no
+ * drop, are still the host's, so a release there is REFUSED rather than
+ * left to the Finder. The Finder cannot tell the host window from the
+ * desktop, and a release it is left with there moves the icons onto the
+ * desktop under the window (NOTES.md, "A release on the host's title bar
+ * is refused"). So while the pointer is anywhere on the host the Finder
+ * is told it is where the drag began, exactly as over the content, and
+ * the drop is taken only if the release is in the content (FDROP_OVER).
+ * Under MultiFinder, with the host in another layer, the point is on the
+ * host when no Finder window is there and its structure region holds
+ * it; part of that may be another layer's window in front of the host,
+ * and a release there is refused too, which is no loss: the Finder would
+ * have moved the icons to the desktop under that window as well.
+ */
+enum { kPartNone = 0, kPartContent = 1, kPartFrame = 2 };
+
+static short host_part(void)
 {
     long       packed = *(long *)kMouseCooked;
     WindowPeek host = (WindowPeek)FDROP_WIN;
     WindowPeek w;
+    Point      g;
 #if FDROP_ROMPLUS
     Point      p, org;
 #endif
 
     if (host == 0)
-        return false;
+        return kPartNone;
+    g.v = (short)((packed >> 16) & 0xFFFFL);
+    g.h = (short)(packed & 0xFFFFL);
     w = window_at(packed);
     if (w == host) {
-        Point g;
-
-        g.v = (short)((packed >> 16) & 0xFFFFL);
-        g.h = (short)(packed & 0xFFFFL);
         if (host->contRgn == 0 || !PtInRgn(g, host->contRgn))
-            return false;
+            return kPartFrame;
         DG(kDgOverWay, 1);
-        return true;
+        return kPartContent;
     }
 #if !FDROP_ROMPLUS
-    return false;                       /* no MultiFinder: the list is all */
+    return kPartNone;                   /* no MultiFinder: the list is all */
 #else
     if (w != 0 || listed(host) || !host->visible
-        || host->port.visRgn == 0)
-        return false;
+        || host->strucRgn == 0 || !PtInRgn(g, host->strucRgn))
+        return kPartNone;
+    if (host->port.visRgn == 0)
+        return kPartFrame;
     org = port_origin(&host->port);
-    p.v = (short)(((packed >> 16) & 0xFFFFL) + org.v);
-    p.h = (short)((packed & 0xFFFFL) + org.h);
+    p.v = (short)(g.v + org.v);
+    p.h = (short)(g.h + org.h);
     if (!PtInRgn(p, host->port.visRgn))
-        return false;
+        return kPartFrame;
     DG(kDgOverWay, 2);
-    return true;
+    return kPartContent;
 #endif
+}
+
+static Boolean over_panel(void)
+{
+    return (Boolean)(host_part() == kPartContent);
 }
 
 #if FDROP_DIAG
@@ -2975,6 +2998,7 @@ static long rom_answer(Point *pt, long ret, long a6)
     const unsigned char *f;
     long    mb = *(long *)kMBTicksAddr;
     long    proc;
+    short   part;
     Boolean held = (Boolean)(mb == FDROP_GEST);
     Boolean released;
 
@@ -3027,7 +3051,8 @@ static long rom_answer(Point *pt, long ret, long a6)
         FDROP_FAKED = 0;
 #endif
         FDROP_ACT = 0;
-        if (!over_panel())
+        part = host_part();
+        if (part == kPartNone)
             return 0;
         if (FDROP_STATE == kDragUnread) {
             short k = resolve_rom();
@@ -3086,6 +3111,7 @@ long fdrop_answer(Point *pt, long ret, long a6)
 #if FDROP_OWN_ROUTE
     const unsigned char *f = (const unsigned char *)a6;
     long proc, site, mb;
+    short part;
     Boolean held;
 #endif
 
@@ -3135,7 +3161,8 @@ long fdrop_answer(Point *pt, long ret, long a6)
             DG(kDgEnd, 2);
             return 0;
         }
-        if (!over_panel())
+        part = host_part();
+        if (part == kPartNone)
             return 0;
         if (FDROP_STATE == kDragUnread) {
             short k = resolve_drag();
@@ -3356,9 +3383,20 @@ static pascal OSErr fdrop_receive(WindowPtr w, void *refCon, DragRef drag)
     FDropHfsFlavor  hfs;
     short         n, i, before;
 
+    Point         mouse, pinned;
+
     (void)refCon;
     DGINC(kDgRecvCalls);
     (void)HideDragHilite(drag);
+
+    /*
+     * Let go on the title bar or the frame: refused, and the icons go
+     * back, as on the sender's route (host_part).
+     */
+    if (GetDragMouse(drag, &mouse, &pinned) != noErr
+        || ((WindowPeek)w)->contRgn == 0
+        || !PtInRgn(mouse, ((WindowPeek)w)->contRgn))
+        return dragNotAcceptedErr;
 
     n = drag_files(drag, 0x7FFF);
     if (n == 0)

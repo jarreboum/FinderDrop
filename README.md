@@ -157,8 +157,11 @@ Oldest first; the last row is where the receiver takes over.
   so it has run on an emulated Macintosh Classic (`NOTES.md`).
 - **MultiFinder** is supported, run on every System from 4.2 to 6.0.8.
   The patches are written into the trap table directly, and the window
-  is found by its visible region (`NOTES.md`). A release counts
-  only in the window's content, never its title bar or frame.
+  is found by its visible region (`NOTES.md`).
+- **A release counts only in the window's content.** Let go on its
+  title bar or frame, the drag is refused and the icons go back where
+  they were, on every route: the Finder is not left to move them to the
+  desktop under the window.
 - **On the 64K ROM**, a `_GetMouse` already patched in RAM is chained to
   as on the other ROMs. Only a machine with `_GetMouse`, `_FindWindow`
   and `_Button` all patched installs no sender, and is not told why.

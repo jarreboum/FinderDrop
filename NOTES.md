@@ -4962,3 +4962,36 @@ the same day: the accessory in the DA Handler's layer took a file out
 of a window viewed by name, two of them, and a file by its name under a
 small icon, as predicted.
 
+## A release on the host's title bar is refused
+
+*Changed 2026-11-27, at the maintainer's request after Session 8 on the
+Plus: a file let go on the accessory's title bar, under System 6.0.3
+with a Finder window over part of the accessory, went to the desktop
+under it.* Since "The title bar left to the Finder in both
+arrangements", a release on the host's title bar or frame was the
+Finder's, and the Finder, which cannot tell a host window from the
+desktop, moved the icons there. Now the host's title bar and frame are
+the host's as much as its content: while the pointer is on any part of
+the window the Finder is told it is where the drag began, so a release
+there moves nothing, and the drop is taken only in the content
+(`host_part`). Under MultiFinder, with the host in another layer, the
+point is on the host when no Finder window is there and the host's
+structure region holds it. On the Drag Manager's route, the receive
+handler refuses a drop whose mouse is outside the window's content
+region, and the icons go back.
+
+Run on emulated machines, the example accessory built `-DFDROP_DIAG=1`
+and the example application; `DragMe` let go on the title bar, then in
+the content:
+
+| machine, System, route | the title bar | the content |
+|---|---|---|
+| Plus 1 MB, 6.0.8, the single Finder | Received: 0; `DragMe` stayed where it was | Received: 1 |
+| Plus 1 MB, 6.0.8 under MultiFinder, the accessory in the DA Handler's layer | the same | Received: 1 |
+| 512K, System 3.0, the ROM's drag routine | Received: 0; `DragMe` stayed in its window | Received: 1 |
+| Plus 4 MB, 7.5.3, the Drag Manager, the application | Received: 0; `DragMe` stayed where it was | Received: 1 |
+
+Not run: the control panel's title bar (the Control Panel's window,
+the same code), a frame other than the title bar, a third layer's
+window over the host.
+
