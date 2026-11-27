@@ -48,41 +48,36 @@ would add something.
 - **iMac G3, Mac OS 9** — a PowerPC running the 68K code under Apple's
   emulator.
 
-**The Plus and the SE/30 are not networked.** Everything reaches them
-on 800K floppies written by the LC475: the Plus reads nothing denser,
-so write 800K for both and one set serves the two machines.
+**The Plus and the SE/30 are not networked, and each has one floppy
+drive.** Every session on them starts from one of the floppies below,
+written by the LC475: the Plus reads nothing denser than 800K, so one
+set serves the two machines.
 
 ## Before you start
 
-- [ ] **The kit.** `FinderDrop Kit.image`, one 800K Disk Copy 4.2
-      image, in `FinderDropBench` at the top of the Mac share. Write it
-      to a floppy on the LC475 with Disk Copy. Everything on it is
-      already decoded, so nothing has to be unpacked on the compact
-      machines:
-  - `Diagnostic` and `Plain`, each holding the example control panel
-    (`FinderDrop`), the example application (`FinderDrop App`) and the
-    example desk accessory in a Font/DA Mover suitcase (`FinderDrop
-    DA`). Double-clicking the suitcase opens it in Font/DA Mover; copy
-    `FinderDrop` into the System file from there. Both suitcases name
-    the accessory `FinderDrop`, so install one at a time.
-  - `Test Files`: `DragMe`, `DragTwo`, one with a 31-character name, and
-    `Folder` with `Inside` in it.
-- [ ] **Copy the test files to the machine's own disk** before the
-      first session, so that drags come from the disk the machine
-      started from and not only from the floppy.
-- [ ] **System 6.0.8 on the Plus and on the SE/30**, each with its own
-      MultiFinder and Font/DA Mover.
-- [ ] **For Session 7:** a 400K MFS floppy. Any old single-sided
-      floppy is one; or write Apple's System 4.0 disk image (the share's
-      `OS/System 4`) to a 400K floppy on the LC475 with Disk Copy. Its
-      files will be dragged and one of them put in a folder, so use a
-      copy. Do not start up from it: put it in after the machine has
-      started from its own disk.
-- [ ] **If the accessory bombs the moment it opens, every time,**
-      remove it with Font/DA Mover and install it again before
-      believing anything else: on the Plus, one damaged copy did
-      exactly that and the next was fine (`NOTES.md`, the entry on
-      bench Session 2).
+- [ ] **The floppies.** In `FinderDropBench`, folder `Bench floppies`,
+      at the top of the Mac share; write each with Disk Copy on the
+      LC475, and do not lock them (the Finder writes to them):
+  - `FinderDrop System 4.1`, `4.3`, `6.0.3` and `6.0.8` (800K). Each
+    STARTS the machine, from Apple's own disk for that System, and
+    carries the three examples, every one the diagnostic build, already
+    installed: the desk accessory `FinderDrop` in the Apple menu, the
+    control panel `FinderDrop` in the Control Panel, and the
+    application `FinderDrop App` at the top of the disk. And the test
+    files: `DragMe`, `DragTwo`, one with a 31-character name, `Folder`
+    with `Inside` in it, and `Views` with `Alpha` and `Beta` overlapping
+    by half an icon and `Gamma`. The volume is named for its System.
+  - `FinderDrop MFS` (400K, MFS): `Alpha`, `Beta`, `Gamma`, `Delta` and
+    `Eps`, for Session 7. It does not start a machine.
+  - `FinderDrop App.bin` and `FinderDrop control panel.bin`, MacBinary,
+    for the machines of Session 6, which do not need a floppy.
+- [ ] **MultiFinder** is on the 4.3, 6.0.3 and 6.0.8 floppies, not
+      chosen: Set Startup in the Special menu chooses it, and the floppy
+      remembers.
+- [ ] **If the accessory bombs the moment it opens, every time,** write
+      that floppy again before believing anything else: on the Plus, one
+      damaged copy did exactly that and the next was fine (`NOTES.md`,
+      the entry on bench Session 2).
 
 ## Session 6 — the machines with a Drag Manager
 
@@ -90,7 +85,8 @@ Short: the library patches nothing here, and the LC475 has already
 taken drops.
 
 - [ ] **LC475, 7.6.1:** the example application and the control panel,
-      one drop each. Expect the first line to read "Through the Drag
+      decoded from the two `.bin` files with StuffIt Expander, one drop
+      each. Expect the first line to read "Through the Drag
       Manager."
 - [ ] **iMac G3, Mac OS 9:** the same two. This is the 68K code under
       the PowerPC's emulator, which only an emulated machine has run.
@@ -101,12 +97,19 @@ Finders 5.4 to 6.1.8 take a 400K floppy's files since this was written,
 and only emulated machines have done it (`NOTES.md`, the entry
 on Finders 5.4 to 6.1.8 taking a drop from an MFS volume). An MFS
 volume has no directories, so every file arrives in directory 0. Run
-it on the Plus under System 6.0.8 without MultiFinder, then on the
-SE/30 under 6.0.8 with MultiFinder; the accessory either time, the
-diagnostic build.
+it on the Plus from the `FinderDrop System 6.0.8` floppy without
+MultiFinder, then on the SE/30 from the same floppy with MultiFinder
+chosen; the accessory either time.
 
-- [ ] **Put the MFS floppy in and open its window.** Expect its files,
-      and "Floppy" or whatever its name is, as on any disk.
+With one drive the two floppies share it, so the Finder will ask for
+each by name as it needs it: put in the one it names, as often as it
+asks. Asking is not a result; a refusal of a drop is.
+
+- [ ] **Start from `FinderDrop System 6.0.8` and choose FinderDrop from
+      the Apple menu.** Then select the startup disk's icon and choose
+      Eject from the File menu, and put in `FinderDrop MFS`.
+- [ ] **Open the MFS floppy's window.** Expect `Alpha` to `Eps`, and
+      `FinderDrop MFS` as on any disk.
 - [ ] **Drag one file out of its window.** Expect "file NAME on DISK
       (−2), directory 0" (the number is the volume's and may differ).
 - [ ] **Select two files, drag both.** Expect two lines, directory 0.
@@ -127,7 +130,8 @@ diagnostic build.
       insert the disk": the accessory asks the File Manager nothing about
       a file in directory 0.
 - [ ] **A file of the startup disk and a file of the floppy, both on
-      the desktop, selected together and dragged.** Expect two lines:
+      the desktop, selected together and dragged.** Put `DragMe` on the
+      desktop first, while the startup disk is in. Expect two lines:
       the startup disk's in directory 2, the floppy's in directory 0.
 
 If a drop is refused, photograph the hex words: they say where it
@@ -138,12 +142,8 @@ stopped.
 Since 2026-11-27 a drop is the window's selection, whatever the view,
 and the press is no longer compared with an icon (`NOTES.md`, "The
 selection is the drag, in every view"). Only emulated machines have
-run it. The four floppies in `FinderDropBench`, folder `Plus floppies
-2026-11-27`, each START the Plus: `FinderDrop Plus 4.1`, `4.3`,
-`6.0.3` and `6.0.8`. Each has the diagnostic accessory already in its
-System, `DragMe`, and a folder `Views` holding `Alpha` and `Beta`
-overlapping by half an icon, and `Gamma`. Write them to 800K floppies
-on the LC475 with Disk Copy, and do not lock them.
+run it. Use the four System floppies, one at a time, and the
+accessory.
 
 On each floppy, started with no MultiFinder, choose FinderDrop from the
 Apple menu, then open `Views`:
@@ -188,6 +188,6 @@ is used:
 - **System 4.0 on anything.** Its disk freezes under emulation before a
   drag can be made.
 - **A Plus with a 68020 or 68030 accelerator, below System 6.0.5.**
-  Open the accessory, take a drop, close it, open it again, take a
-  drop: twenty times. A crash that comes only sometimes is what a stale
+  From the `FinderDrop System 6.0.3` floppy: open the accessory, take
+  a drop, close it, open it again, take a drop: twenty times. A crash that comes only sometimes is what a stale
   instruction cache looks like.
