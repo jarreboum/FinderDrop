@@ -189,5 +189,6 @@ is used:
   drag can be made.
 - **A Plus with a 68020 or 68030 accelerator, below System 6.0.5.**
   From the `FinderDrop System 6.0.3` floppy: open the accessory, take
-  a drop, close it, open it again, take a drop: twenty times. A crash that comes only sometimes is what a stale
-  instruction cache looks like.
+  a drop, close it, open it again, take a drop: twenty times. A crash
+  that comes only sometimes is what a stale instruction cache looks
+  like.
