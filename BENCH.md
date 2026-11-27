@@ -175,6 +175,30 @@ If a drop is refused, photograph the hex words: the fifth is a hundred
 times the drags recognised plus the step it stopped at, and 97 now means
 nothing was selected in that window.
 
+## Session 9 — the title bar refuses, on the Plus
+
+Since 2026-11-27 a drop let go on a host window's title bar or frame is
+refused and the icons stay where they were (`NOTES.md`, "A release on
+the host's title bar is refused"); before, the Finder moved them to the
+desktop under the window. Only emulated machines have run it. Write
+the bench floppies again first: a copy older than that change has the
+old behaviour. From the `FinderDrop System 6.0.8` floppy:
+
+- [ ] **The accessory, no MultiFinder.** Open `Views` so that it covers
+      part of the accessory, as in the photograph of Session 8. Drag
+      `Alpha` and let go on the strip of the accessory's title bar that
+      shows. Expect nothing listed, and `Alpha` back in `Views`, not on
+      the desktop. Then let go in the accessory's content: one line.
+- [ ] **The same on its frame:** let go on the thin edge of the window
+      below the content. Expect nothing listed, `Alpha` back.
+- [ ] **The control panel:** the same two drops on the Control Panel's
+      title bar, with FinderDrop selected in it, then in its content.
+- [ ] **MultiFinder** (Set Startup, restart): the accessory's title bar
+      and content again; then launch `FinderDrop App`, switch back to
+      the Finder, and the same two drops on the application's window.
+      (Without MultiFinder, launching it quits the Finder, and there is
+      nothing to drag from.)
+
 ## If one is ever to hand
 
 Each of these would be a first, and none is needed before the library
