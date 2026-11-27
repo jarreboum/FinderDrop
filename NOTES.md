@@ -4891,6 +4891,30 @@ RAM snapshot by `statewords.py`:
 | the Installer in the corner of 6.0.8L's disk, on the Classic | taken | taken |
 | the eight MFS drags of `mfsown/run6.sh` with `ctl6 single` | Received 9 | Received 9 |
 
+Then, the same day, on the final build:
+
+| where | what | result |
+|---|---|---|
+| Plus 1 MB, 6.0.8, the single Finder | two files from a list; a name under an icon; the overlap | each taken |
+| Plus 1 MB, 6.0.8 under MultiFinder, a plain build | two files from a list | both taken |
+| the same, diagnostic | two files selected in a list, then Shift held and the press on a selected one | the Finder deselects it and does not drag; nothing handed over |
+| 512K on the 64K ROM, System 4.1, `own64seq.sh` with `--hd20` | a file out of a window, two, one off the desktop | taken: 1, 2, 1, nothing refused |
+| 512Ke, System 3.3, `own64seq.sh` with `--work --machine 512Ke` | the same | the same |
+| Plus 1 MB, booted from the System 4.1 and 6.0.8 bench floppies (below) | Alpha out of Views by name; then Views by icon, pressed where Alpha and Beta overlap | Alpha both times |
+| System 7.5.3 (the Drag Manager), the example application | a file out of an expanded folder in a list; two of them | each taken, from the folder's own directory |
+
+The last row is not this change: the Drag Manager hands its items over
+itself. System 7.5's Finder will not select items at two levels of a
+list together, so such a drag cannot be made at all.
+
+**The bench floppies.** `fdplus.py`, outside the repository, makes one
+bootable 800K floppy per System: Apple's own 4.1, 4.3 and 6.0.3 disks
+and the 6.0.8 System Tools disk (Installer, its script, Monitors and
+Startup Device off), each with the diagnostic accessory merged into its
+System as DRVR 22, `DragMe`, and `Views` holding Alpha and Beta
+overlapping by half an icon and Gamma; primed under a 6.0.8 Finder.
+All four boot on the emulated Plus with the accessory in the Apple
+menu.
+
 Not run: the ROM route of Finders 1.1g to 5.3, which this does not
-touch; a shift-press that deselects an icon and drags on; System 4.1
-and the 64K ROM.
+touch; a real Macintosh.
