@@ -4945,3 +4945,17 @@ the System file. On an emulated Plus the same floppy, and Apple's own
 than that with no bomb. The test that decides it is that control disk,
 idle on the real Plus: `Control 6.0.8.image` beside the bench floppies.
 
+## Session 8 on the Plus, 6.0.8: the views
+
+*Run 2026-11-27 on the real Plus at 1 MB, started from the bench floppy
+`FinderDrop System 6.0.8` without MultiFinder, the diagnostic
+accessory. Library at e472780.* Every step of `BENCH.md`'s Session 8 as
+predicted: a file out of a window viewed by name and two of them, a
+file by its name under a small icon and under a large one, the overlap,
+`DragMe` off the desktop; a rubber band and a shift-press on a selected
+icon handed over nothing. The first selection-rule run on hardware.
+
+The floppy had no MultiFinder: Apple's System Tools disk it is made
+from carries none, so the MultiFinder half could not be run. The
+floppy now carries 6.0.8's own MultiFinder, DA Handler and Backgrounder.
+

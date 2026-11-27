@@ -141,12 +141,13 @@ stopped.
 
 Since 2026-11-27 a drop is the window's selection, whatever the view,
 and the press is no longer compared with an icon (`NOTES.md`, "The
-selection is the drag, in every view"). Only emulated machines have
-run it. Use the four System floppies, one at a time, and the
-accessory.
+selection is the drag, in every view"). Run on the Plus from the
+6.0.8 floppy without MultiFinder (`NOTES.md`, "Session 8 on the Plus,
+6.0.8"); left are the 4.1, 4.3 and 6.0.3 floppies the same way, and
+MultiFinder on 4.3, 6.0.3 and 6.0.8. The accessory each time.
 
-On each floppy, started with no MultiFinder, choose FinderDrop from the
-Apple menu, then open `Views`:
+On the 4.1, 4.3 and 6.0.3 floppies, started with no MultiFinder, choose
+FinderDrop from the Apple menu, then open `Views`:
 
 - [ ] **View by Name. Drag `Alpha` onto the accessory.** Expect one
       line naming it.
@@ -167,7 +168,9 @@ Apple menu, then open `Views`:
       it and does not drag.
 
 On `4.3`, `6.0.3` and `6.0.8`, then choose MultiFinder with Set Startup
-in the Special menu, restart, and do the first three steps again.
+in the Special menu, restart, and do the first three steps again. The
+6.0.8 floppy had no MultiFinder at first: if its System Folder has
+none, it is the old copy, so write it again.
 
 If a drop is refused, photograph the hex words: the fifth is a hundred
 times the drags recognised plus the step it stopped at, and 97 now means
