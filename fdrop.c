@@ -2248,7 +2248,21 @@ static short resolve_drag(void)
         pos = nm + kRecPos;
         top = rec_word(pos);
         left = rec_word(pos + 2);
-        if (at.v >= top && at.v < top + kIconSize
+        /*
+         * In an HFS window a record says it is drawn there by its
+         * container AND by its directory, and only both together are
+         * true.  The Finder keeps records of the System and the Finder
+         * whose container is the startup disk's window and whose
+         * directory is the System Folder's, at (0,0) and (0,64), where
+         * it draws nothing: an icon placed in that corner had two hits
+         * and was refused (NOTES.md, "An icon in the top-left corner
+         * of a startup disk's window was refused").  An MFS window's
+         * records all say 0, and an offline folder's directory is not
+         * known, so neither is asked.
+         */
+        if ((onDesk || dirID == kMfsDir || dirID == kAskDir
+             || blob_long(nm + kRecParent) == dirID)
+            && at.v >= top && at.v < top + kIconSize
             && at.h >= left && at.h < left + kIconSize) {
             hits = (short)(hits + 1);
             pressedSel = sel;

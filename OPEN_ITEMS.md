@@ -16,9 +16,9 @@ What is open is of three kinds, and they are kept apart:
   the code is there and has run under emulation, or is the same code a
   run has reached; what is missing is a manual test on hardware this
   bench has not got.
-- **Part 2, known bugs** (items 4 and 5): each misbehaves, and the
-  cause is understood but not fixed.
-- **Part 3, still to build** (item 6): features, ranked, with the
+- **Part 2, a known bug** (item 4): it misbehaves on a real machine, and
+  the cause is understood but not fixed.
+- **Part 3, still to build** (item 5): features, ranked, with the
   releases they are planned for.
 
 ---
@@ -69,7 +69,7 @@ run: the 64K ROM takes the same path.
 second floppy drive and an MFS floppy ejected with Command-E: a file
 off it, and the disk's own icon.
 
-# Part 2. Known bugs
+# Part 2. A known bug
 
 ## 4. Two quick drops in succession open the file
 
@@ -115,31 +115,9 @@ It is kept as a known limit of the library.
 under the single Finder and MultiFinder and on Finder 5.4, then on a
 real Plus.
 
-## 5. An icon over an invisible item is refused
-
-On System 6.0.8L, on an emulated Macintosh Classic, the Installer in
-the window of Apple's own 6.0.8L startup disk is refused: step 97, not
-exactly one icon under the press, with two hits. Its `fdLocation` is
-(0,1), and the disk's root holds two invisible items, `Desktop` and
-`TheVolumeSettingsFolder`, both at (0,0); TeachText and ReadMe in the
-same window are taken. `resolve_drag` counts every record of the
-window whose 32-pixel square holds the press and does not ask whether
-it is invisible; `takeable` refuses an invisible item, but only one
-that is selected. So a press the Finder takes as the Installer's is
-refused whole: the safe direction, but nothing arrives.
-
-Measured on that one disk under 6.0.8L, where its Finder's code is
-6.0.8's byte for byte. The count is the same code for every Finder from
-5.4 to 6.1.8, read and not run; the ROM route of the earlier Finders
-has not been looked at.
-
-**What closes it:** a hit count that leaves out what the Finder does
-not draw; then, on that disk, the Installer taken, and a press on two
-overlapping visible icons still refused.
-
 # Part 3. Still to build
 
-## 6. The rest of the Drag Manager, 0.2 and after, ranked by how feasible it is
+## 5. The rest of the Drag Manager, 0.2 and after, ranked by how feasible it is
 
 FinderDrop takes files dropped from the Finder, by the Drag Manager
 where there is one (and highlights the window while a drag is over it,

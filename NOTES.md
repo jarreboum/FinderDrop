@@ -4778,17 +4778,17 @@ diagnostic word is a hundred times the drags recognised plus the step.
 | the disk, a folder and DragMe off the desktop | all three: the disk (directory 1), the folder, the file | 0069 |
 | the Installer out of the window | nothing, "Received: 0" | 00C5: step 97, two hits |
 
-The last is `OPEN_ITEMS.md`: the Installer sits at (0,1) in that
-window, over the invisible `Desktop` and `TheVolumeSettingsFolder` at
-(0,0), and the hit count includes them. It is the disk and not the
-System: the count is the code 6.0.8 runs, and 6.0.8L will not start on
-the Plus to compare.
+The last was a library bug and not the System's, and it is the next
+entry. *(The cause first written here, the disk's invisible `Desktop`
+and `TheVolumeSettingsFolder` at (0,0) under the Installer at (0,1), was
+wrong: the Finder holds no record of either.)*
 
 So what 6.0.8L changes under the library is its System file, and that
 System file with 6.1.8's Finder takes a drop from a window, two files
 in one drag, a drop off the desktop and a mixed one, and leaves the
 Finder's own drag alone with the host open. Not run: the single
-Finder, a plain build, and less than 4 MB.
+Finder and less than 4 MB; the plain build only for the Installer,
+after the fix.
 
 *How to repeat it:* Mini vMac configured with `./setup_t -t lx64 -m
 Classic -mem 4M -speed a -as 0 -bg 1 -sound 0 -magnify 0 -drives 6`.
@@ -4802,3 +4802,41 @@ w:2 --from 205,250`; the same with `--shift 88,250`; `--from 474,110
 --shift 474,166 --shift 472,45`; and the first with `--from 88,95`.
 The harness's close-box click misses this disk's window, so the drops
 are let go at 350,200, where the accessory's window shows beside it.
+
+## An icon in the top-left corner of a startup disk's window was refused
+
+*Found and fixed 2026-11-27, emulated.* The Finder keeps a record for
+the **System** and one for the **Finder** whose container is the
+startup disk's window and whose directory is the System Folder's (22 on
+both disks below), at (0,0) and (0,64) in that window, where it draws
+nothing. `resolve_drag` counted a hit on the container and the square
+alone, so an icon placed in that corner was under the press twice and
+the drag was refused: step 97, two hits. Read out of a RAM snapshot of
+the Classic below, every record whose container is the window, by
+`finderrecs.py RAM NAME` beside `dragshell.py`.
+
+The fix: in an HFS window a record counts only if its directory is the
+window's too. An MFS window's records all say directory 0, and an
+offline folder's directory is not known (`kAskDir`), so neither is
+asked; the desktop is not either. A selected record elsewhere is still
+refused by `takeable`, as before.
+
+| machine, System | press | before (a523b25) | after |
+|---|---|---|---|
+| Classic, 6.0.8L, its own startup disk | the Installer, at (0,1) | refused, step 97, two hits | taken, one hit; the plain build too |
+| Classic, 6.0.8L, the same with a file Twin placed on the Installer | the two | -- | refused, step 97, two hits |
+| Plus 1 MB, 6.0.8 under MultiFinder, a file Corner placed at (0,1), the System Folder moved out of the corner | Corner | refused, step 97, two hits | taken |
+| Classic, 6.0.8L | ReadMe and TeachText | taken | taken |
+| Plus, 6.0.8 | the disk, a folder and a file off the desktop | taken | taken |
+
+Not run after the fix: an MFS window and a folder's window, whose
+branches the fix leaves as they were and which `check_switches.sh` and
+the three example builds compile.
+
+*How to repeat it:* the rows of the entry above, with `--from 88,95`;
+the Twin disk is that disk with `hcopy` of a file Twin and
+`hfsvol.place(DISK, "Twin", 2, 0, 1)`. The Plus row is `dragshell.py
+--system 6 --stock DISK --item 70,171 --at 458,94 --diag --step d:468,45
+--step w:4 --step c:25,200 --step w:2 --from 45,105 --target 224,268
+--front 224,268`, DISK being the System 6 disk with Corner placed at
+(0,1) and the System Folder at (60,280).
