@@ -12,12 +12,12 @@ library asks.
 
 What is open is of three kinds, and they are kept apart:
 
-- **Part 1, built and not yet run on a real machine** (items 1 to 4):
+- **Part 1, built and not yet run on a real machine** (items 1 to 3):
   the code is there and has run under emulation, or is the same code a
   run has reached; what is missing is a manual test on hardware this
   bench has not got.
-- **Part 2, a known bug** (item 5): it misbehaves on a real machine, and
-  the cause is understood but not fixed.
+- **Part 2, known bugs** (items 4 and 5): each misbehaves, and the
+  cause is understood but not fixed.
 - **Part 3, still to build** (item 6): features, ranked, with the
   releases they are planned for.
 
@@ -54,21 +54,7 @@ machine it is for. The three places that want a port's origin read it
   without MultiFinder: a drop out of a Finder window, and one onto a
   host whose window is a colour window.
 
-## 3. System 6.0.8L has not been run
-
-Its Finder is 6.1.8 with the code of 6.0.8's, byte for byte, so the
-recognition is the one already run. Its System file is not: it stops at
-startup on a Macintosh Plus, on a Macintosh II and on a Quadra, and on
-a machine that says it is an LC but runs with 32-bit addressing
-(`NOTES.md`, the entry on System 6.0.8L). No emulator here is
-a Classic, a Classic II, an LC, an LC II or a PowerBook 100 with 24-bit
-addressing.
-
-**What closes it:** one of those five machines, real or emulated, under
-6.0.8L: a file out of a window, two files in one drag, a file off the
-desktop, and one of the Finder's own drags with a host open.
-
-## 4. An ejected MFS disk on the 64K ROM under Finder 5.5
+## 3. An ejected MFS disk on the 64K ROM under Finder 5.5
 
 On the emulated 512K, Command-E on a 400K MFS floppy brings the
 Finder's own "Please insert the disk" at once, with the floppy's window
@@ -83,9 +69,9 @@ run: the 64K ROM takes the same path.
 second floppy drive and an MFS floppy ejected with Command-E: a file
 off it, and the disk's own icon.
 
-# Part 2. A known bug
+# Part 2. Known bugs
 
-## 5. Two quick drops in succession open the file
+## 4. Two quick drops in succession open the file
 
 On a real Macintosh Plus, System 4.0 (Finder 5.4), a file dropped on
 the accessory and pressed again at once is opened by the Finder, as a
@@ -128,6 +114,28 @@ It is kept as a known limit of the library.
 **What closes it:** a change, a quick double drop on the emulator
 under the single Finder and MultiFinder and on Finder 5.4, then on a
 real Plus.
+
+## 5. An icon over an invisible item is refused
+
+On System 6.0.8L, on an emulated Macintosh Classic, the Installer in
+the window of Apple's own 6.0.8L startup disk is refused: step 97, not
+exactly one icon under the press, with two hits. Its `fdLocation` is
+(0,1), and the disk's root holds two invisible items, `Desktop` and
+`TheVolumeSettingsFolder`, both at (0,0); TeachText and ReadMe in the
+same window are taken. `resolve_drag` counts every record of the
+window whose 32-pixel square holds the press and does not ask whether
+it is invisible; `takeable` refuses an invisible item, but only one
+that is selected. So a press the Finder takes as the Installer's is
+refused whole: the safe direction, but nothing arrives.
+
+Measured on that one disk under 6.0.8L, where its Finder's code is
+6.0.8's byte for byte. The count is the same code for every Finder from
+5.4 to 6.1.8, read and not run; the ROM route of the earlier Finders
+has not been looked at.
+
+**What closes it:** a hit count that leaves out what the Finder does
+not draw; then, on that disk, the Installer taken, and a press on two
+overlapping visible icons still refused.
 
 # Part 3. Still to build
 

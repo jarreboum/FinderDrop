@@ -137,7 +137,7 @@ Oldest first; the last row is where the receiver takes over.
 |---|---|---|---|
 | 1.1g, 1.1, 4.1 | 1.1, 2.0 | from the ROM's drag routine, which these Finders call | all, on the 64K ROM and the Plus ROM |
 | 5.0 to 5.3 | 2.1 to 3.2 | the same, with these Finders' own record layout | all, on both ROMs |
-| 5.4 to 6.1.8 | 3.3 to 6.0.8 | from the Finder's own drag routine, recognised by its code | all but 6.0.8L; System 4.0 on a real Plus only |
+| 5.4 to 6.1.8 | 3.3 to 6.0.8 | from the Finder's own drag routine, recognised by its code | all, 6.0.8L on an emulated Classic; System 4.0 on a real Plus only |
 | 7.0 to 7.1 | 7.0 to 7.1 | only with Apple's Drag and Drop extension, through the Drag Manager (below) | |
 | 7.5 and later | 7.5 to Mac OS 9.2.2 | not by the sender: the receiver takes the drop through the Drag Manager | 7.5.3, 8.1, 9.2.2, and a real LC475 under 7.6.1 |
 
@@ -151,8 +151,8 @@ Oldest first; the last row is where the receiver takes over.
   which has no catalog, by name and file number — out of a window, off
   the desktop, in a folder or in the Trash.
 - **System 4.0** freezes the pointer under emulation, so it has run on a
-  real Plus only. **System 6.0.8L** stops at startup in every emulated
-  machine, so it has not been run (`NOTES.md`).
+  real Plus only. **System 6.0.8L** starts only on the models it names,
+  so it has run on an emulated Macintosh Classic (`NOTES.md`).
 - **MultiFinder** is supported, run on every System from 4.2 to 6.0.8.
   The patches are written into the trap table directly, and the window
   is found by its visible region (`NOTES.md`). A release counts

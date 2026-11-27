@@ -3413,6 +3413,10 @@ on an application under MultiFinder, `dragshellapp.py` with `--repo
 
 ### System 6.0.8L refuses every emulated machine here, at startup; its Finder's code is 6.0.8's, byte for byte
 
+*(Since overtaken: Mini vMac built as a Macintosh Classic runs it, and
+the library takes a drop there -- the entry "System 6.0.8L on an
+emulated Macintosh Classic".)*
+
 *Run 2026-11-13: Apple's 1.44 MB "6.0.8L System Startup" disk (the
 `Z` release), booted with nothing added and nothing taken away. Nothing
 of the library ran.*
@@ -4752,3 +4756,49 @@ the switch matrix the same in all 56 rows. The quick drags at a Plus's speed
 were counted 3 times of 12 in one plain run, and 9 and 6 in two more,
 against 6 to 10 before: timing, as above.
 
+## System 6.0.8L on an emulated Macintosh Classic
+
+*Run 2026-11-27, at 961aee5, the example accessory built
+`-DFDROP_DIAG=1`, on Mini vMac 36.04 built `-m Classic -mem 4M` with a
+Classic ROM (checksum A49F9914), booting Apple's 1.44 MB "6.0.8L System
+Startup" disk with the accessory merged into its System file as DRVR
+22 and nothing else changed. The disk boots its own MultiFinder.*
+
+The Classic is a 68000 with 24-bit addressing and one of the five
+models the System names, so the startup alert of the entry above does
+not come up: the desktop is there by 40 s. Every row is one boot and
+one drag onto the accessory's window, read off the screen; the fifth
+diagnostic word is a hundred times the drags recognised plus the step.
+
+| the drag | what the accessory lists | fifth word |
+|---|---|---|
+| TeachText out of the disk's window | file TeachText, directory 2 | 0069: one drag, taken |
+| ReadMe and TeachText out of the window, shift-clicked | both files, directory 2 | 0069 |
+| DragMe off the desktop; then DragMe moved down the desktop | DragMe only, still "Received: 1"; the icon moved where it was dropped | 00C9: two drags, the second left to the Finder |
+| the disk, a folder and DragMe off the desktop | all three: the disk (directory 1), the folder, the file | 0069 |
+| the Installer out of the window | nothing, "Received: 0" | 00C5: step 97, two hits |
+
+The last is `OPEN_ITEMS.md`: the Installer sits at (0,1) in that
+window, over the invisible `Desktop` and `TheVolumeSettingsFolder` at
+(0,0), and the hit count includes them. It is the disk and not the
+System: the count is the code 6.0.8 runs, and 6.0.8L will not start on
+the Plus to compare.
+
+So what 6.0.8L changes under the library is its System file, and that
+System file with 6.1.8's Finder takes a drop from a window, two files
+in one drag, a drop off the desktop and a mixed one, and leaves the
+Finder's own drag alone with the host open. Not run: the single
+Finder, a plain build, and less than 4 MB.
+
+*How to repeat it:* Mini vMac configured with `./setup_t -t lx64 -m
+Classic -mem 4M -speed a -as 0 -bg 1 -sound 0 -magnify 0 -drives 6`.
+The disk image is 1388544 bytes, a 1.44 MB disk with its unused tail
+cut off: hfsutils cannot write the System file back until it is padded
+to 1474560 with zeroes. Then `dragshell.py --stock DISK --emu MINIVMAC
+--rom ROM --item 70,155 --wait 40 --diag --at 458,94 --target 350,200
+--front 350,200` with, for the rows in order, `--step c:100,305 --step
+w:2 --from 205,250`; the same with `--shift 88,250`; `--from 474,110
+--after 474,110,474,240`; `--folder DragFolder@458,150 --from 474,110
+--shift 474,166 --shift 472,45`; and the first with `--from 88,95`.
+The harness's close-box click misses this disk's window, so the drops
+are let go at 350,200, where the accessory's window shows beside it.
