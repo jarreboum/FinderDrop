@@ -4956,6 +4956,9 @@ file by its name under a small icon and under a large one, the overlap,
 icon handed over nothing. The first selection-rule run on hardware.
 
 The floppy had no MultiFinder: Apple's System Tools disk it is made
-from carries none, so the MultiFinder half could not be run. The
-floppy now carries 6.0.8's own MultiFinder, DA Handler and Backgrounder.
+from carries none. Written again with 6.0.8's own MultiFinder, DA
+Handler and Backgrounder on it and MultiFinder chosen with Set Startup,
+the same day: the accessory in the DA Handler's layer took a file out
+of a window viewed by name, two of them, and a file by its name under a
+small icon, as predicted.
 
