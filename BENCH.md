@@ -1,7 +1,7 @@
 # BENCH.md — FinderDrop on real Macintoshes, in order
 
 Sessions 1 to 5 have been run, on a Plus and an SE/30
-(`NOTES.md`, the bench entries); Session 7 is new; before them the sender had run only on emulators, and
+(`NOTES.md`, the bench entries); Sessions 7 and 8 are new; before them the sender had run only on emulators, and
 the one real machine this library had met, an LC475 under System 7.6.1,
 took its drops through the Drag Manager. This file is the plan for
 closing that:
@@ -261,6 +261,46 @@ diagnostic build.
 
 If a drop is refused, photograph the hex words: they say where it
 stopped.
+
+## Session 8 — the views, on the Plus, one System at a time
+
+Since 2026-11-27 a drop is the window's selection, whatever the view,
+and the press is no longer compared with an icon (`NOTES.md`, "The
+selection is the drag, in every view"). Only emulated machines have
+run it. The four floppies in `FinderDropBench`, folder `Plus floppies
+2026-11-27`, each START the Plus: `FinderDrop Plus 4.1`, `4.3`,
+`6.0.3` and `6.0.8`. Each has the diagnostic accessory already in its
+System, `DragMe`, and a folder `Views` holding `Alpha` and `Beta`
+overlapping by half an icon, and `Gamma`. Write them to 800K floppies
+on the LC475 with Disk Copy, and do not lock them.
+
+On each floppy, started with no MultiFinder, choose FinderDrop from the
+Apple menu, then open `Views`:
+
+- [ ] **View by Name. Drag `Alpha` onto the accessory.** Expect one
+      line naming it.
+- [ ] **Select `Alpha` and `Beta` (Shift-click), drag both.** Expect
+      two lines.
+- [ ] **View by Small Icon. Drag `Gamma` by its name.** Expect one
+      line.
+- [ ] **View by Icon. Drag `Gamma` by the name under its icon.** Expect
+      one line.
+- [ ] **Click empty space, then drag from where `Alpha` and `Beta`
+      overlap.** Expect one line, naming whichever of the two the
+      Finder highlights.
+- [ ] **Drag `DragMe` off the desktop.** Expect one line.
+- [ ] **Press empty space in `Views` and drag a rubber band out over
+      the accessory, let go.** Expect nothing listed.
+- [ ] **Select `Alpha` and `Beta`, hold Shift, press `Alpha` and drag
+      onto the accessory.** Expect nothing listed: the Finder deselects
+      it and does not drag.
+
+On `4.3`, `6.0.3` and `6.0.8`, then choose MultiFinder with Set Startup
+in the Special menu, restart, and do the first three steps again.
+
+If a drop is refused, photograph the hex words: the fifth is a hundred
+times the drags recognised plus the step it stopped at, and 97 now means
+nothing was selected in that window.
 
 ## If one is ever to hand
 
