@@ -4942,8 +4942,8 @@ drive before it. Nothing of the library runs unless a host is opened:
 the control panel has no startup code, and the accessory is inert in
 the System file. On an emulated Plus the same floppy, and Apple's own
 6.0.8 disk with the same three files taken off, sat idle far longer
-than that with no bomb. The test that decides it is that control disk,
-idle on the real Plus: `Control 6.0.8.image` beside the bench floppies.
+than that with no bomb. Not pursued: the control run on the real
+Plus was dropped.
 
 ## Session 8 on the Plus, 6.0.8: the views
 

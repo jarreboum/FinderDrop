@@ -68,13 +68,11 @@ set serves the two machines.
     with `Inside` in it, and `Views` with `Alpha` and `Beta` overlapping
     by half an icon and `Gamma`. The volume is named for its System.
   - `FinderDrop MFS` (400K, MFS): `Alpha`, `Beta`, `Gamma`, `Delta` and
-    `Eps`, for Walk 7. It does not start a machine.
+    `Eps`, for Walk 6. It does not start a machine.
   - `FinderDrop App.bin` and `FinderDrop control panel.bin`, MacBinary,
     for the LC475 and the iMac, which do not need a floppy.
-  - `Control 6.0.8`: Apple's own 6.0.8 disk with nothing of ours on
-    it, for Walk 6.
 - [ ] **Unlock the MFS floppy too.** Locked, the Finder dims New Folder
-      on it, which Walk 7 needs; every drop still works.
+      on it, which Walk 6 needs; every drop still works.
 - [ ] **MultiFinder** is on the 4.3, 6.0.3 and 6.0.8 floppies, not
       chosen: Set Startup in the Special menu chooses it, and the floppy
       remembers.
@@ -127,7 +125,7 @@ Start from `FinderDrop System 6.0.8`.
 - [ ] **T1 and T2 on the Control Panel**, with FinderDrop selected in
       it.
 - [ ] **Choose MultiFinder** with Set Startup in the Special menu, and
-      restart: the floppy keeps it for Walk 2 and for Walk 7.
+      restart: the floppy keeps it for Walk 2 and for Walk 6.
 
 ## Walk 2 — the Plus, 6.0.8, MultiFinder
 
@@ -161,19 +159,7 @@ Start from `FinderDrop System 4.1`, which has no MultiFinder.
 - [ ] **V1 to V8.**
 - [ ] **T1 on the accessory.**
 
-## Walk 6 — the Plus, left alone
-
-Not FinderDrop's, and the reason it is here: started from the
-FinderDrop 6.0.8 floppy and left at the desktop with nothing opened,
-the Plus once put up "coprocessor not installed" after about half an
-hour (`NOTES.md`, the entry on Session 7 on the Plus). This is the
-control.
-
-- [ ] **Start from `Control 6.0.8`, open nothing, and leave it an hour.**
-      A bomb means the machine or the floppies, not the library; none
-      means the next step is the FinderDrop floppy left the same way.
-
-## Walk 7 — the SE/30, 6.0.8 with MultiFinder, and an MFS floppy
+## Walk 6 — the SE/30, 6.0.8 with MultiFinder, and an MFS floppy
 
 Start from the `FinderDrop System 6.0.8` floppy Walk 1 set to
 MultiFinder, and choose FinderDrop from the Apple menu. An MFS volume
@@ -209,7 +195,7 @@ is not a result; a refusal of a drop is.
       desktop first, while the startup disk is in. Expect two lines:
       the startup disk's in directory 2, the floppy's in directory 0.
 
-## Walk 8 — the LC475, 7.6.1, the Drag Manager
+## Walk 7 — the LC475, 7.6.1, the Drag Manager
 
 The library patches nothing here. Decode `FinderDrop App.bin` and
 `FinderDrop control panel.bin` with StuffIt Expander, the control panel
@@ -221,9 +207,9 @@ into the Control Panels folder. Expect each window's first line to read
       going back.
 - [ ] **The control panel: the same two.**
 
-## Walk 9 — the iMac G3, Mac OS 9
+## Walk 8 — the iMac G3, Mac OS 9
 
-- [ ] **As Walk 8.** This is the 68K code under the PowerPC's emulator,
+- [ ] **As Walk 7.** This is the 68K code under the PowerPC's emulator,
       which only an emulated machine has run.
 
 ## If one is ever to hand
